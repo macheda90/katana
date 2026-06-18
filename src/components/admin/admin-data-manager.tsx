@@ -17,7 +17,6 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Plus, Search, Pencil, Trash2, Loader2, CheckCircle2, XCircle, Upload, FileText, ImageIcon, Lock } from "lucide-react"
-import Image from "next/image"
 import { toast } from "sonner"
 import { canPerformAction } from "@/lib/admin-config"
 import type { SectionConfig, FieldConfig } from "@/lib/admin-config"
@@ -231,13 +230,28 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
                     {section.listColumns.map((col) => (
                       <td key={col.key} className="px-4 py-3 text-slate-700 whitespace-nowrap">
                         {col.key === "photo" ? (
-                          <div className="relative h-10 w-10 rounded-full overflow-hidden bg-slate-100 shrink-0">
+                          <div className="h-10 w-10 rounded-full overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center">
                             {record.photo ? (
-                              <Image src={record.photo} alt={record.fullName || "Foto"} fill className="object-cover" sizes="40px" />
+                              <img
+                                src={record.photo}
+                                alt={record.fullName || "Foto"}
+                                className="h-full w-full object-cover"
+                                onError={(e) => {
+                                  const target = e.currentTarget
+                                  target.style.display = "none"
+                                  const parent = target.parentElement
+                                  if (parent && !parent.querySelector(".fallback-initial")) {
+                                    const fb = document.createElement("div")
+                                    fb.className = "fallback-initial flex h-full w-full items-center justify-center text-sm font-bold text-white bg-gradient-to-br from-orange-500 to-orange-600"
+                                    fb.textContent = (record.fullName || "?").charAt(0)
+                                    parent.appendChild(fb)
+                                  }
+                                }}
+                              />
                             ) : (
-                              <div className="flex h-full w-full items-center justify-center text-slate-300">
-                                <ImageIcon className="h-5 w-5" />
-                              </div>
+                              <span className="flex h-full w-full items-center justify-center text-sm font-bold text-white bg-gradient-to-br from-orange-500 to-orange-600">
+                                {(record.fullName || "?").charAt(0)}
+                              </span>
                             )}
                           </div>
                         ) : col.key === "status" ? (
@@ -451,8 +465,15 @@ function FieldInput({ field, value, onChange }: { field: FieldConfig; value: unk
             </Button>
           </div>
           {value ? (
-            <div className="relative h-24 w-24 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
-              <Image src={value as string} alt={field.label} fill className="object-cover" sizes="96px" />
+            <div className="h-24 w-24 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
+              <img
+                src={value as string}
+                alt={field.label}
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none"
+                }}
+              />
             </div>
           ) : (
             <div className="flex h-24 w-24 items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50">
