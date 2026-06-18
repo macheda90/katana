@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionUser, ADMIN_ROLES } from '@/lib/auth'
-import { adminSections } from '@/lib/admin-config'
+import { adminSections, canAccessSection, canPerformAction } from '@/lib/admin-config'
 import { modelMap } from '@/lib/admin-models'
 
 export async function PATCH(
@@ -15,6 +15,10 @@ export async function PATCH(
   const config = adminSections[section]
   const model = modelMap[section]
   if (!config || !model) return NextResponse.json({ error: 'Section not found' }, { status: 404 })
+
+  if (!canAccessSection(config, user.role) || !canPerformAction(config, user.role, 'edit')) {
+    return NextResponse.json({ error: 'Anda tidak memiliki izin untuk mengedit data di section ini' }, { status: 403 })
+  }
 
   const body = await req.json()
   const data: Record<string, unknown> = {}
@@ -31,6 +35,20 @@ export async function PATCH(
       }
     }
   }
+
+  // Log audit
+  try {
+    await (await import('@/lib/db')).db.auditLog.create({
+      data: {
+        userId: user.id,
+        action: 'UPDATE',
+        entity: section,
+        entityId: id,
+        details: `Updated ${config.singular}`,
+        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || null,
+      },
+    })
+  } catch {}
 
   try {
     const record = await model.update({ where: { id }, data })
@@ -53,6 +71,24 @@ export async function DELETE(
   const config = adminSections[section]
   const model = modelMap[section]
   if (!config || !model) return NextResponse.json({ error: 'Section not found' }, { status: 404 })
+
+  if (!canAccessSection(config, user.role) || !canPerformAction(config, user.role, 'delete')) {
+    return NextResponse.json({ error: 'Anda tidak memiliki izin untuk menghapus data di section ini' }, { status: 403 })
+  }
+
+  // Log audit
+  try {
+    await (await import('@/lib/db')).db.auditLog.create({
+      data: {
+        userId: user.id,
+        action: 'DELETE',
+        entity: section,
+        entityId: id,
+        details: `Deleted ${config.singular}`,
+        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || null,
+      },
+    })
+  } catch {}
 
   try {
     await model.delete({ where: { id } })

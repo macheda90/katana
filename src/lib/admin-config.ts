@@ -12,6 +12,21 @@ export interface SectionConfig {
   fields: FieldConfig[]
   listColumns: { key: string; label: string }[]
   searchFields?: string[]
+  roles: string[]
+  canCreate?: string[]
+  canEdit?: string[]
+  canDelete?: string[]
+}
+
+export const ALL_ADMIN_ROLES = ['SUPER_ADMIN', 'ADMIN', 'PENGURUS', 'KOORDINATOR_DIVISI']
+export const FULL_ACCESS_ROLES = ['SUPER_ADMIN', 'ADMIN']
+export const SETTINGS_ROLES = ['SUPER_ADMIN', 'ADMIN']
+
+const R = {
+  all: ['SUPER_ADMIN', 'ADMIN', 'PENGURUS', 'KOORDINATOR_DIVISI'],
+  full: ['SUPER_ADMIN', 'ADMIN'],
+  fullPengurus: ['SUPER_ADMIN', 'ADMIN', 'PENGURUS'],
+  koorOnly: ['KOORDINATOR_DIVISI'],
 }
 
 export const adminSections: Record<string, SectionConfig> = {
@@ -25,6 +40,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'phone', label: 'HP' },
       { key: 'status', label: 'Status' },
     ],
+    roles: R.all,
+    canCreate: R.full,
+    canEdit: R.all,
+    canDelete: R.full,
     fields: [
       { name: 'fullName', label: 'Nama Lengkap', type: 'text', required: true },
       { name: 'memberNumber', label: 'Nomor Anggota', type: 'text', required: true },
@@ -62,6 +81,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'author', label: 'Penulis' },
       { key: 'publishedAt', label: 'Tanggal' },
     ],
+    roles: R.fullPengurus,
+    canCreate: R.fullPengurus,
+    canEdit: R.fullPengurus,
+    canDelete: R.full,
     fields: [
       { name: 'title', label: 'Judul', type: 'text', required: true },
       { name: 'category', label: 'Kategori', type: 'select', required: true, options: [
@@ -89,6 +112,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'location', label: 'Lokasi' },
       { key: 'activityDate', label: 'Tanggal' },
     ],
+    roles: R.all,
+    canCreate: R.fullPengurus,
+    canEdit: R.all,
+    canDelete: R.full,
     fields: [
       { name: 'title', label: 'Judul', type: 'text', required: true },
       { name: 'category', label: 'Kategori', type: 'select', required: true, options: [
@@ -115,6 +142,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'startDate', label: 'Mulai' },
       { key: 'status', label: 'Status' },
     ],
+    roles: R.fullPengurus,
+    canCreate: R.fullPengurus,
+    canEdit: R.fullPengurus,
+    canDelete: R.full,
     fields: [
       { name: 'title', label: 'Judul', type: 'text', required: true },
       { name: 'category', label: 'Kategori', type: 'select', required: true, options: [
@@ -145,6 +176,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'status', label: 'Status' },
       { key: 'startDate', label: 'Mulai' },
     ],
+    roles: R.all,
+    canCreate: R.fullPengurus,
+    canEdit: R.all,
+    canDelete: R.full,
     fields: [
       { name: 'name', label: 'Nama Misi', type: 'text', required: true },
       { name: 'type', label: 'Jenis', type: 'select', required: true, options: [
@@ -176,6 +211,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'quantity', label: 'Jumlah' },
       { key: 'condition', label: 'Kondisi' },
     ],
+    roles: R.fullPengurus,
+    canCreate: R.full,
+    canEdit: R.fullPengurus,
+    canDelete: R.full,
     fields: [
       { name: 'name', label: 'Nama Peralatan', type: 'text', required: true },
       { name: 'category', label: 'Kategori', type: 'select', required: true, options: [
@@ -207,6 +246,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'method', label: 'Metode' },
       { key: 'status', label: 'Status' },
     ],
+    roles: R.full,
+    canCreate: R.full,
+    canEdit: R.full,
+    canDelete: R.full,
     fields: [
       { name: 'donorName', label: 'Nama Donatur', type: 'text', required: true },
       { name: 'donorEmail', label: 'Email', type: 'text' },
@@ -234,6 +277,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'status', label: 'Status' },
       { key: 'createdAt', label: 'Tanggal' },
     ],
+    roles: R.fullPengurus,
+    canCreate: [],
+    canEdit: R.fullPengurus,
+    canDelete: R.full,
     fields: [
       { name: 'name', label: 'Nama', type: 'text', required: true },
       { name: 'email', label: 'Email', type: 'text', required: true },
@@ -257,6 +304,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'status', label: 'Status' },
       { key: 'createdAt', label: 'Tanggal' },
     ],
+    roles: R.all,
+    canCreate: [],
+    canEdit: R.all,
+    canDelete: R.full,
     fields: [
       { name: 'type', label: 'Jenis Kejadian', type: 'select', required: true, options: [
         { value: 'ORANG_HILANG', label: 'Orang Hilang' },
@@ -287,6 +338,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'severity', label: 'Skala' },
       { key: 'status', label: 'Status' },
     ],
+    roles: R.fullPengurus,
+    canCreate: R.full,
+    canEdit: R.fullPengurus,
+    canDelete: R.full,
     fields: [
       { name: 'type', label: 'Jenis Bencana', type: 'select', required: true, options: [
         { value: 'BANJIR', label: 'Banjir' },
@@ -319,6 +374,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'role', label: 'Peran' },
       { key: 'rating', label: 'Rating' },
     ],
+    roles: R.fullPengurus,
+    canCreate: R.fullPengurus,
+    canEdit: R.fullPengurus,
+    canDelete: R.full,
     fields: [
       { name: 'name', label: 'Nama', type: 'text', required: true },
       { name: 'role', label: 'Peran', type: 'text' },
@@ -336,6 +395,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'name', label: 'Nama' },
       { key: 'type', label: 'Tipe' },
     ],
+    roles: R.fullPengurus,
+    canCreate: R.fullPengurus,
+    canEdit: R.fullPengurus,
+    canDelete: R.full,
     fields: [
       { name: 'name', label: 'Nama Mitra', type: 'text', required: true },
       { name: 'type', label: 'Tipe', type: 'select', options: [
@@ -360,6 +423,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { key: 'coordinator', label: 'Koordinator' },
       { key: 'order', label: 'Urutan' },
     ],
+    roles: R.full,
+    canCreate: R.full,
+    canEdit: R.full,
+    canDelete: R.full,
     fields: [
       { name: 'name', label: 'Nama Divisi', type: 'text', required: true },
       { name: 'slug', label: 'Slug', type: 'text', required: true },
@@ -370,4 +437,15 @@ export const adminSections: Record<string, SectionConfig> = {
       { name: 'order', label: 'Urutan', type: 'number' },
     ],
   },
+}
+
+// Check if a role can access a section
+export function canAccessSection(section: SectionConfig, role: string): boolean {
+  return section.roles.includes(role)
+}
+
+// Check if a role can perform an action on a section
+export function canPerformAction(section: SectionConfig, role: string, action: 'create' | 'edit' | 'delete'): boolean {
+  const allowed = action === 'create' ? section.canCreate : action === 'edit' ? section.canEdit : section.canDelete
+  return allowed?.includes(role) ?? false
 }

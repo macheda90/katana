@@ -4,7 +4,7 @@ import { verifyPassword, createSession } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json()
+    const { email, password, remember } = await req.json()
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email dan password wajib diisi' }, { status: 400 })
@@ -24,7 +24,17 @@ export async function POST(req: NextRequest) {
       data: { lastLoginAt: new Date() },
     })
 
-    await createSession(user.id)
+    // Record login history
+    await db.loginHistory.create({
+      data: {
+        userId: user.id,
+        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || null,
+        userAgent: req.headers.get('user-agent') || null,
+        success: true,
+      },
+    })
+
+    await createSession(user.id, remember === true)
 
     return NextResponse.json({
       user: {

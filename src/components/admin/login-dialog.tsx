@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog"
@@ -20,6 +21,7 @@ export function LoginDialog({
 }) {
   const [email, setEmail] = useState("admin@katanarescue.cikampek.id")
   const [password, setPassword] = useState("")
+  const [remember, setRemember] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const { setUser, setShowAdmin } = useAuth()
@@ -32,7 +34,7 @@ export function LoginDialog({
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, remember }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -97,6 +99,17 @@ export function LoginDialog({
                 required
               />
             </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="remember"
+              checked={remember}
+              onCheckedChange={(v) => setRemember(v === true)}
+            />
+            <Label htmlFor="remember" className="text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
+              Tetap Masuk (simpan sesi 30 hari)
+            </Label>
           </div>
 
           {error && (

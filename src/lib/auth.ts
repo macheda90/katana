@@ -20,16 +20,18 @@ export function verifyPassword(password: string, stored: string): boolean {
 }
 
 const SESSION_COOKIE = 'katana_session'
-const SESSION_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
+const SESSION_MAX_AGE_NORMAL = 60 * 60 * 24 // 1 day
+const SESSION_MAX_AGE_REMEMBER = 60 * 60 * 24 * 30 // 30 days
 
-export async function createSession(userId: string) {
+export async function createSession(userId: string, remember = false) {
+  const maxAge = remember ? SESSION_MAX_AGE_REMEMBER : SESSION_MAX_AGE_NORMAL
   const token = Buffer.from(JSON.stringify({ id: userId, ts: Date.now() })).toString('base64')
   const cookieStore = await cookies()
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: SESSION_MAX_AGE,
+    maxAge,
     path: '/',
   })
 }
@@ -48,7 +50,7 @@ export async function getSessionUser() {
     if (!data.id) return null
     const user = await db.user.findUnique({
       where: { id: data.id },
-      select: { id: true, email: true, name: true, role: true, avatar: true, isActive: true },
+      select: { id: true, email: true, name: true, role: true, avatar: true, isActive: true, memberId: true },
     })
     if (!user || !user.isActive) return null
     return user
@@ -57,4 +59,18 @@ export async function getSessionUser() {
   }
 }
 
-export const ADMIN_ROLES = ['SUPER_ADMIN', 'ADMIN', 'PENGURUS']
+export const ADMIN_ROLES = ['SUPER_ADMIN', 'ADMIN', 'PENGURUS', 'KOORDINATOR_DIVISI']
+
+// Role hierarchy for permission checks
+export const ROLE_LEVELS: Record<string, number> = {
+  SUPER_ADMIN: 100,
+  ADMIN: 80,
+  PENGURUS: 60,
+  KOORDINATOR_DIVISI: 40,
+  ANGGOTA: 20,
+  RELAWAN: 10,
+}
+
+export function hasRole(userRole: string, allowedRoles: string[]): boolean {
+  return allowedRoles.includes(userRole)
+}

@@ -1,15 +1,10 @@
 import { Target, Eye, Heart, Award, Users2, ShieldCheck } from "lucide-react"
 import { SectionHeading } from "@/components/site/section-heading"
 
-const visi = "Menjadi tim SAR dan relawan kemanusiaan terdepan, profesional, dan terpercaya dalam penanggulangan bencana di Kecamatan Cikampek dan sekitarnya."
-
-const misi = [
-  "Memberikan pelayanan pencarian, pertolongan, dan evakuasi yang cepat, tepat, dan profesional.",
-  "Meningkatkan kapasitas anggota melalui pelatihan dan sertifikasi berkala.",
-  "Membangun kemitraan strategis dengan pemerintah dan instansi terkait.",
-  "Melaksanakan program kesiapsiagaan bencana dan edukasi masyarakat.",
-  "Mengedepankan nilai kemanusiaan, profesionalisme, dan kepedulian sosial.",
-]
+export function AboutSection({ settings }: { settings: Record<string, string> }) {
+  const visi = settings.about_visi || "Menjadi tim SAR dan relawan kemanusiaan terdepan, profesional, dan terpercaya dalam penanggulangan bencana di Kecamatan Cikampek dan sekitarnya."
+  const misi = (settings.about_misi || "Memberikan pelayanan pencarian, pertolongan, dan evakuasi yang cepat, tepat, dan profesional.|Meningkatkan kapasitas anggota melalui pelatihan dan sertifikasi berkala|Membangun kemitraan strategis dengan pemerintah dan instansi terkait|Melaksanakan program kesiapsiagaan bencana dan edukasi masyarakat|Mengedepankan nilai kemanusiaan, profesionalisme, dan kepedulian sosial").split("|")
+  const history = settings.about_history || "Katana Rescue didirikan pada tahun 2018 oleh sekelompok relawan muda di Kecamatan Cikampek yang memiliki kepedulian tinggi terhadap keselamatan masyarakat. Bermula dari kegiatan pencarian dan pertolongan korban banjir musiman, organisasi terus berkembang."
 
 const nilai = [
   { icon: Heart, title: "Kemanusiaan", desc: "Mengutamakan keselamatan dan kesejahteraan sesama." },
@@ -18,7 +13,6 @@ const nilai = [
   { icon: Users2, title: "Kerja Sama", desc: "Kolaborasi tim dan mitra dalam setiap tugas." },
 ]
 
-export function AboutSection() {
   return (
     <section id="about" className="py-20 bg-white dark:bg-[#0a0f1d]">
       <div className="container mx-auto px-4">
@@ -51,9 +45,7 @@ export function AboutSection() {
               Berakar dari Kepedulian, Tumbuh dengan Profesionalisme
             </h3>
             <div className="space-y-3 text-slate-600 dark:text-slate-300 leading-relaxed">
-              <p>
-                Katana Rescue didirikan pada tahun 2018 oleh sekelompok relawan muda di Kecamatan Cikampek yang memiliki kepedulian tinggi terhadap keselamatan masyarakat. Bermula dari kegiatan pencarian dan pertolongan korban banjir musiman, organisasi terus berkembang.
-              </p>
+              <p>{history}</p>
               <p>
                 Saat ini Katana Rescue memiliki 8 divisi spesialisasi dengan lebih dari 50 anggota aktif yang siaga 24 jam merespons keadaan darurat. Kami bermitra dengan BPBD, PMI, BASARNAS, TNI, POLRI, dan pemerintah daerah dalam sistem penanggulangan bencana terpadu.
               </p>

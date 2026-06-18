@@ -10,8 +10,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { MapPin, Phone, Mail, Clock, MessageCircle, Send } from "lucide-react"
 import { SectionHeading } from "@/components/site/section-heading"
 
-export function ContactSection() {
+export function ContactSection({ settings }: { settings: Record<string, string> }) {
   const [loading, setLoading] = useState(false)
+  const phone = settings.phone || "+62 812-3456-7890"
+  const email = settings.email || "info@katanarescue.cikampek.id"
+  const address = settings.address || "Jl. Raya Cikampek No. 1, Cikampek, Karawang, Jawa Barat 41373"
+  const whatsapp = settings.whatsapp || phone
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -64,7 +68,7 @@ export function ContactSection() {
                     </div>
                     <div>
                       <div className="text-xs text-slate-400 mb-0.5">Alamat</div>
-                      <div className="text-sm">Jl. Raya Cikampek No. 1, Cikampek, Karawang, Jawa Barat 41373</div>
+                      <div className="text-sm">{address}</div>
                     </div>
                   </div>
                   <div className="flex gap-3">
@@ -73,7 +77,7 @@ export function ContactSection() {
                     </div>
                     <div>
                       <div className="text-xs text-slate-400 mb-0.5">Telepon / WhatsApp</div>
-                      <div className="text-sm font-semibold">+62 812-3456-7890</div>
+                      <div className="text-sm font-semibold">{phone}</div>
                     </div>
                   </div>
                   <div className="flex gap-3">
@@ -82,7 +86,7 @@ export function ContactSection() {
                     </div>
                     <div>
                       <div className="text-xs text-slate-400 mb-0.5">Email</div>
-                      <div className="text-sm">info@katanarescue.cikampek.id</div>
+                      <div className="text-sm">{email}</div>
                     </div>
                   </div>
                   <div className="flex gap-3">
@@ -97,7 +101,7 @@ export function ContactSection() {
                   </div>
                 </div>
                 <a
-                  href="https://wa.me/6281234567890"
+                  href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-6 flex items-center justify-center gap-2 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 rounded-lg transition-colors"

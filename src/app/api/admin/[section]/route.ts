@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionUser, ADMIN_ROLES } from '@/lib/auth'
-import { adminSections } from '@/lib/admin-config'
+import { adminSections, canAccessSection, canPerformAction } from '@/lib/admin-config'
 import { modelMap } from '@/lib/admin-models'
 
 export async function GET(
@@ -15,6 +15,10 @@ export async function GET(
   const config = adminSections[section]
   const model = modelMap[section]
   if (!config || !model) return NextResponse.json({ error: 'Section not found' }, { status: 404 })
+
+  if (!canAccessSection(config, user.role)) {
+    return NextResponse.json({ error: 'Anda tidak memiliki akses ke section ini' }, { status: 403 })
+  }
 
   const { searchParams } = new URL(req.url)
   const search = searchParams.get('search') || ''
@@ -50,6 +54,10 @@ export async function POST(
   const model = modelMap[section]
   if (!config || !model) return NextResponse.json({ error: 'Section not found' }, { status: 404 })
 
+  if (!canAccessSection(config, user.role) || !canPerformAction(config, user.role, 'create')) {
+    return NextResponse.json({ error: 'Anda tidak memiliki izin untuk membuat data di section ini' }, { status: 403 })
+  }
+
   const body = await req.json()
 
   const data: Record<string, unknown> = {}
@@ -73,11 +81,24 @@ export async function POST(
     data.slug = titleVal.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36)
   }
 
-  // Set defaults for news
   if (section === 'news') {
     if (!data.publishedAt) data.publishedAt = new Date()
     if (data.views === undefined) data.views = 0
   }
+
+  // Log audit
+  try {
+    await (await import('@/lib/db')).db.auditLog.create({
+      data: {
+        userId: user.id,
+        action: 'CREATE',
+        entity: section,
+        entityId: null,
+        details: `Created ${config.singular}: ${data.title || data.name || data.fullName || 'record'}`,
+        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || null,
+      },
+    })
+  } catch {}
 
   try {
     const record = await model.create({ data })

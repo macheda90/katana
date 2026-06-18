@@ -61,3 +61,54 @@ Stage Summary:
 - Mobile responsive admin sidebar with overlay
 - Demo credentials: admin@katanarescue.cikampek.id / admin123
 - Lint: 0 errors, 0 warnings
+
+---
+Task ID: rbac-settings-sync
+Agent: Z.ai Code (main)
+Task: Complete all CRUD, role-based menu access, approval workflow, Tetap Masuk checkbox, comprehensive settings, and front-back sync
+
+Work Log:
+- Added "Tetap Masuk" (Remember Me) checkbox to LoginDialog with 30-day session (vs 1-day default); updated auth.ts createSession to accept remember flag; updated login API to pass remember param
+- Defined RBAC in admin-config.ts: each of 13 sections has roles[] (view), canCreate[], canEdit[], canDelete[] arrays
+  - SUPER_ADMIN/ADMIN: full access to all 14 sections + Settings
+  - PENGURUS: 12 sections (no Donasi, Divisi, Settings) - can edit but not delete most
+  - KOORDINATOR_DIVISI: 5 sections (Dashboard, Anggota, Kegiatan, Misi SAR, Laporan) - can edit but not create/delete
+- Updated admin API routes ([section]/route.ts and [section]/[id]/route.ts) to enforce role checks: canAccessSection for GET, canPerformAction for POST/PATCH/DELETE - returns 403 if unauthorized
+- Added audit logging: every CREATE/UPDATE/DELETE/UPDATE_SETTINGS action records userId, action, entity, entityId, details, IP
+- Added login history recording on successful login (userId, IP, userAgent)
+- Seeded 4 users with different roles: SUPER_ADMIN (admin123), ADMIN (pengelola123), PENGURUS (pengurus123), KOORDINATOR_DIVISI (koord123)
+- Updated AdminPortal: filters navItems based on role via useMemo; derived safeActiveSection (no setState in effect) to fallback to dashboard if role loses access; shows pending count badges on sidebar (members/donations/contacts/incidents) fetched every 30s; shows "X Perlu Tindakan" alert in header
+- Updated DataManager: accepts userRole prop; hides Tambah button if !canCreate; hides Edit button if !canEdit; hides Delete button if !canDelete; shows "read-only" label when no edit/delete; quick actions (approve/verify/mark-read) gated by canEdit
+- Built comprehensive AdminSettings component with 5 tabs:
+  - Umum: site name, tagline, description, logo URL, favicon, primary color, footer text, copyright
+  - Hero: headline, subheadline, description, CTA1 text+link, CTA2 text+link
+  - Kontak: address, phone, email, whatsapp, emergency hotline, Instagram/Facebook/YouTube/Twitter
+  - Tentang: history, visi, misi (pipe-separated)
+  - Peta & SEO: maps lat/lng/embed, meta keywords, meta author
+  - Sticky save bar at bottom; 30 setting keys total
+- Created /api/settings PUT route (SUPER_ADMIN/ADMIN only) using upsert transaction for all settings
+- Created server-side getSiteSettings() helper with all 30 default values + DB overrides
+- Synced homepage to back office: page.tsx fetches settings and passes to HeroSection, AboutSection, MapSection, ContactSection, Footer - all now read dynamic values from SiteSetting table
+- Added revalidate=30 to page.tsx so front-end auto-refreshes within 30 seconds of back-office changes
+- Verified with Agent Browser:
+  - Login form shows "Tetap Masuk (simpan sesi 30 hari)" checkbox (checked by default)
+  - SUPER_ADMIN sees 14 sections + Settings (15 nav items)
+  - PENGURUS sees 12 sections (no Donasi/Divisi/Settings)
+  - KOORDINATOR_DIVISI sees 4 sections (Anggota/Kegiatan/Misi SAR/Laporan) + Dashboard
+  - API returns 403 for unauthorized section access (KOORDINATOR accessing divisions = 403)
+  - API returns 403 for unauthorized actions (KOORDINATOR deleting member = 403)
+  - Settings page loads all 5 tabs with editable fields
+  - Settings API PUT works (tested hero_headline change -> saved to DB -> homepage synced "KATANA RESCUE SAR")
+  - Pending badges show real-time counts (9 members, 2 donations, 1 contact, 1 incident)
+  - "X Perlu Tindakan" alert in header with total pending count
+
+Stage Summary:
+- Complete RBAC: 4 roles with granular per-section view/create/edit/delete permissions
+- API-level role enforcement (403 for unauthorized)
+- "Tetap Masuk" checkbox with 30-day extended session
+- Comprehensive Settings page (30 configurable keys across 5 tabs)
+- Full front-end ↔ back-office sync: homepage reads from SiteSetting, revalidates every 30s
+- Audit log for all admin actions + login history
+- Pending count badges + "Perlu Tindakan" alert for approval workflow
+- Demo users: admin@katanarescue.cikampek.id/admin123, pengelola@.../pengelola123, pengurus@.../pengurus123, koordinator@.../koord123
+- Lint: 0 errors, 0 warnings

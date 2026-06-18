@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { getSiteSettings } from "@/lib/site-settings"
 import { Navbar } from "@/components/site/navbar"
 import { Footer } from "@/components/site/footer"
 import { HeroSection } from "@/components/sections/hero-section"
@@ -37,8 +38,11 @@ async function getStats() {
   }
 }
 
+// Revalidate every 30 seconds so front-end syncs with back-office changes
+export const revalidate = 30
+
 export default async function HomePage() {
-  const [stats, divisions, activities, news, agenda, testimonials, partners] = await Promise.all([
+  const [stats, divisions, activities, news, agenda, testimonials, partners, settings] = await Promise.all([
     getStats(),
     db.division.findMany({
       orderBy: { order: "asc" },
@@ -61,15 +65,16 @@ export default async function HomePage() {
     }),
     db.testimonial.findMany({ orderBy: { order: "asc" } }),
     db.partner.findMany({ orderBy: { order: "asc" } }),
+    getSiteSettings(),
   ])
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-[#0a0f1d]">
       <Navbar />
       <main className="flex-1">
-        <HeroSection stats={stats} />
+        <HeroSection stats={stats} settings={settings} />
         <StatsSection stats={stats} />
-        <AboutSection />
+        <AboutSection settings={settings} />
         <DivisionsSection divisions={divisions} />
         <ActivitiesSection activities={activities} />
         <NewsSection news={news} />
@@ -83,10 +88,10 @@ export default async function HomePage() {
         <DonasiSection />
         <TestimonialsSection testimonials={testimonials} />
         <PartnersSection partners={partners} />
-        <MapSection />
-        <ContactSection />
+        <MapSection settings={settings} />
+        <ContactSection settings={settings} />
       </main>
-      <Footer />
+      <Footer settings={settings} />
       <AdminPortal />
     </div>
   )

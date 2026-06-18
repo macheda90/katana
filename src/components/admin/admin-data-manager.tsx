@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Plus, Search, Pencil, Trash2, Loader2, CheckCircle2, XCircle } from "lucide-react"
 import { toast } from "sonner"
+import { canPerformAction } from "@/lib/admin-config"
 import type { SectionConfig } from "@/lib/admin-config"
 
 const statusColors: Record<string, string> = {
@@ -62,7 +63,7 @@ function formatCurrency(n: number) {
   return "Rp " + (n || 0).toLocaleString("id-ID")
 }
 
-export function DataManager({ section, sectionKey }: { section: SectionConfig; sectionKey: string }) {
+export function DataManager({ section, sectionKey, userRole }: { section: SectionConfig; sectionKey: string; userRole: string }) {
   const [records, setRecords] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -70,6 +71,10 @@ export function DataManager({ section, sectionKey }: { section: SectionConfig; s
   const [editing, setEditing] = useState<any>(null)
   const [creating, setCreating] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+
+  const canCreate = canPerformAction(section, userRole, 'create')
+  const canEdit = canPerformAction(section, userRole, 'edit')
+  const canDelete = canPerformAction(section, userRole, 'delete')
 
   const fetchData = async () => {
     setLoading(true)
@@ -159,8 +164,9 @@ export function DataManager({ section, sectionKey }: { section: SectionConfig; s
           <h2 className="text-2xl font-bold text-white">{section.title}</h2>
           <p className="text-sm text-slate-400">Kelola data {section.title.toLowerCase()} organisasi</p>
         </div>
-        <Button onClick={() => setCreating(true)} className="bg-orange-500 hover:bg-orange-600 text-white">
+        <Button onClick={() => setCreating(true)} disabled={!canCreate} className="bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-40 disabled:cursor-not-allowed">
           <Plus className="h-4 w-4 mr-1" />Tambah {section.singular}
+          {!canCreate && <span className="ml-2 text-[10px] opacity-70">(read-only)</span>}
         </Button>
       </div>
 
@@ -235,9 +241,9 @@ export function DataManager({ section, sectionKey }: { section: SectionConfig; s
                     ))}
                     <td className="px-4 py-3 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1">
-                        {sectionKey === "members" && record.status === "PENDING" && (
+                        {sectionKey === "members" && record.status === "PENDING" && canEdit && (
                           <>
-                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-emerald-400 hover:bg-emerald-500/20" onClick={() => quickAction(record.id, { status: "ACTIVE", joinDate: new Date() }, "Anggota disetujui")} title="Approve">
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-emerald-400 hover:bg-emerald-500/20" onClick={() => quickAction(record.id, { status: "ACTIVE", joinDate: new Date() }, "Anggota disetujui & diaktifkan")} title="Approve">
                               <CheckCircle2 className="h-4 w-4" />
                             </Button>
                             <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-400 hover:bg-red-500/20" onClick={() => quickAction(record.id, { status: "REJECTED" }, "Anggota ditolak")} title="Reject">
@@ -245,27 +251,34 @@ export function DataManager({ section, sectionKey }: { section: SectionConfig; s
                             </Button>
                           </>
                         )}
-                        {sectionKey === "donations" && record.status === "PENDING" && (
+                        {sectionKey === "donations" && record.status === "PENDING" && canEdit && (
                           <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-emerald-400 hover:bg-emerald-500/20" onClick={() => quickAction(record.id, { status: "VERIFIED" }, "Donasi diverifikasi")} title="Verify">
                             <CheckCircle2 className="h-4 w-4" />
                           </Button>
                         )}
-                        {sectionKey === "contacts" && record.status === "BARU" && (
+                        {sectionKey === "contacts" && record.status === "BARU" && canEdit && (
                           <Button size="sm" variant="ghost" className="h-8 px-2 text-blue-400 hover:bg-blue-500/20" onClick={() => quickAction(record.id, { status: "DIBACA" }, "Pesan ditandai dibaca")}>
                             Tandai Dibaca
                           </Button>
                         )}
-                        {sectionKey === "incidents" && record.status === "BARU" && (
+                        {sectionKey === "incidents" && record.status === "BARU" && canEdit && (
                           <Button size="sm" variant="ghost" className="h-8 px-2 text-amber-400 hover:bg-amber-500/20" onClick={() => quickAction(record.id, { status: "DITINJAU" }, "Laporan ditinjau")}>
                             Tinjau
                           </Button>
                         )}
-                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:bg-slate-600/50" onClick={() => setEditing(record)} title="Edit">
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-400 hover:bg-red-500/20" onClick={() => setDeleteId(record.id)} title="Hapus">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {canEdit && (
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:bg-slate-600/50" onClick={() => setEditing(record)} title="Edit">
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {canDelete && (
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-400 hover:bg-red-500/20" onClick={() => setDeleteId(record.id)} title="Hapus">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {!canEdit && !canDelete && (
+                          <span className="text-xs text-slate-500 italic px-2">read-only</span>
+                        )}
                       </div>
                     </td>
                   </tr>
