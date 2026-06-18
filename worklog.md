@@ -25,3 +25,39 @@ Stage Summary:
 - All APIs tested and verified working
 - Mobile responsive with sticky footer
 - Lint: 0 errors, 0 warnings
+
+---
+Task ID: admin-backoffice
+Agent: Z.ai Code (main)
+Task: Add login button, login form, and back office admin panel to manage all data
+
+Work Log:
+- Created auth infrastructure: src/lib/auth.ts with scrypt password hashing, session cookie management, getSessionUser helper
+- Updated admin user password to "admin123" using scrypt hash
+- Created Zustand auth store (src/lib/auth-store.ts) with persist middleware for user + showAdmin state
+- Built auth API routes: /api/auth/login (POST - verify credentials, set cookie), /api/auth/logout (POST - clear cookie), /api/auth/me (GET - current user from cookie)
+- Created admin config (src/lib/admin-config.ts) with 13 section definitions (members, news, activities, agenda, missions, inventory, donations, contacts, incidents, disasters, testimonials, partners, divisions) - field types, list columns, search fields
+- Created server-only model mapping (src/lib/admin-models.ts) to separate Prisma client from client-side config
+- Built generic admin CRUD API: /api/admin/[section] (GET list with search/filter, POST create with auto-slug), /api/admin/[section]/[id] (PATCH update, DELETE)
+- Built LoginDialog component with email/password form, demo credentials display, error handling
+- Built AdminDashboard with 8 stat widgets + 4 Recharts charts (member growth, activities, missions, donations)
+- Built generic DataManager component with searchable/filterable table, create/edit form dialog, delete confirmation, quick actions (approve/reject members, verify donations, mark messages read, review incidents)
+- Built AdminPortal full-screen overlay with sidebar navigation (14 sections), user profile, back-to-site and logout buttons, mobile responsive
+- Updated Navbar with login button (when logged out) and user dropdown menu with "Back Office" + "Keluar" (when logged in), mobile menu includes login/back office/logout
+- Updated page.tsx to include AdminPortal component
+- Fixed lint error: replaced useEffect setState with lazy useState initializer + key prop for RecordForm
+- Fixed client-side error: separated Prisma model mapping from admin-config (was importing db in client component)
+- Fixed news creation: added auto-slug generation for news/activities/agenda sections, set publishedAt and views defaults
+- Verified with Agent Browser: login flow works, admin dashboard renders with stats/charts, member approval works (PENDING→ACTIVE), news creation works with auto-slug, navigation between all 14 sections works, back-to-site button works, user persists login state
+- VLM verified admin panel: "Highly functional and professional - clear information hierarchy, intuitive navigation, well-organized data visualization"
+
+Stage Summary:
+- Complete back office CMS with login system
+- 14 manageable sections with full CRUD (create, read, update, delete)
+- Quick action buttons for workflow operations (approve members, verify donations, review incidents)
+- Auth: scrypt password hashing, httpOnly session cookies, RBAC role checking (SUPER_ADMIN, ADMIN, PENGURUS)
+- Auto-slug generation for news/activities/agenda
+- Searchable and filterable data tables
+- Mobile responsive admin sidebar with overlay
+- Demo credentials: admin@katanarescue.cikampek.id / admin123
+- Lint: 0 errors, 0 warnings

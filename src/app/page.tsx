@@ -19,6 +19,7 @@ import { DonasiSection } from "@/components/sections/donasi-section"
 import { DisasterSection } from "@/components/sections/disaster-section"
 import { MapSection } from "@/components/sections/map-section"
 import { ContactSection } from "@/components/sections/contact-section"
+import { AdminPortal } from "@/components/admin/admin-portal"
 
 async function getStats() {
   try {
@@ -86,6 +87,7 @@ export default async function HomePage() {
         <ContactSection />
       </main>
       <Footer />
+      <AdminPortal />
     </div>
   )
 }
