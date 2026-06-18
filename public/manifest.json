@@ -1,0 +1,24 @@
+{
+  "name": "KATANA RESCUE - Portal Tim SAR Cikampek",
+  "short_name": "Katana Rescue",
+  "description": "Portal Resmi Tim SAR dan Relawan Penanggulangan Bencana Kecamatan Cikampek",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#FF6B00",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/katana-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/katana-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
