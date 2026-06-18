@@ -1,9 +1,11 @@
 export interface FieldConfig {
   name: string
   label: string
-  type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'boolean'
+  type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'boolean' | 'file' | 'image'
   options?: { value: string; label: string }[]
   required?: boolean
+  placeholder?: string
+  full?: boolean // span full width
 }
 
 export interface SectionConfig {
@@ -35,9 +37,11 @@ export const adminSections: Record<string, SectionConfig> = {
     singular: 'Anggota',
     searchFields: ['fullName', 'memberNumber', 'email', 'phone'],
     listColumns: [
+      { key: 'photo', label: 'Foto' },
       { key: 'memberNumber', label: 'No. Anggota' },
       { key: 'fullName', label: 'Nama' },
       { key: 'phone', label: 'HP' },
+      { key: 'division', label: 'Divisi' },
       { key: 'status', label: 'Status' },
     ],
     roles: R.all,
@@ -45,6 +49,7 @@ export const adminSections: Record<string, SectionConfig> = {
     canEdit: R.all,
     canDelete: R.full,
     fields: [
+      { name: 'photo', label: 'Foto Anggota', type: 'image', placeholder: 'URL foto anggota' },
       { name: 'fullName', label: 'Nama Lengkap', type: 'text', required: true },
       { name: 'memberNumber', label: 'Nomor Anggota', type: 'text', required: true },
       { name: 'nik', label: 'NIK', type: 'text' },
@@ -61,7 +66,10 @@ export const adminSections: Record<string, SectionConfig> = {
       { name: 'village', label: 'Desa', type: 'text' },
       { name: 'education', label: 'Pendidikan', type: 'text' },
       { name: 'occupation', label: 'Pekerjaan', type: 'text' },
-      { name: 'skills', label: 'Keahlian', type: 'text' },
+      { name: 'skills', label: 'Keahlian', type: 'text', placeholder: 'Renang, P3K, Tali-temali' },
+      { name: 'bio', label: 'Bio / Profil Singkat', type: 'textarea', full: true, placeholder: 'Deskripsi singkat tentang anggota' },
+      { name: 'certifications', label: 'Sertifikasi', type: 'text', placeholder: 'BNSP SAR, P3K, dll' },
+      { name: 'certFile', label: 'File Sertifikat', type: 'file', placeholder: 'URL file sertifikat (PDF)' },
       { name: 'status', label: 'Status', type: 'select', required: true, options: [
         { value: 'PENDING', label: 'Pending' },
         { value: 'ACTIVE', label: 'Aktif' },

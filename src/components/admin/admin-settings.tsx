@@ -103,17 +103,17 @@ export function AdminSettings() {
   }
 
   if (loading) {
-    return <div className="flex items-center justify-center h-96 text-slate-400">Memuat pengaturan...</div>
+    return <div className="flex items-center justify-center h-96 text-slate-500">Memuat pengaturan...</div>
   }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-white">Pengaturan Website</h2>
-          <p className="text-sm text-slate-400">Atur semua tampilan dan konten di halaman utama website</p>
+          <h2 className="text-2xl font-bold text-slate-900">Pengaturan Website</h2>
+          <p className="text-sm text-slate-500">Atur semua tampilan dan konten di halaman utama website</p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-orange-500 hover:bg-orange-600 text-white">
+        <Button onClick={handleSave} disabled={saving} className="bg-orange-500 hover:bg-orange-600 text-slate-900">
           {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
           Simpan Pengaturan
         </Button>
@@ -130,8 +130,8 @@ export function AdminSettings() {
 
         {/* General */}
         <TabsContent value="general" className="space-y-4">
-          <Card className="bg-slate-800/50 border-slate-700/50">
-            <CardHeader><CardTitle className="text-white text-base">Informasi Website</CardTitle></CardHeader>
+          <Card className="bg-white border-slate-200">
+            <CardHeader><CardTitle className="text-slate-900 text-base">Informasi Website</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Nama Website" value={values.site_name} onChange={(v) => update("site_name", v)} />
@@ -146,8 +146,8 @@ export function AdminSettings() {
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800/50 border-slate-700/50">
-            <CardHeader><CardTitle className="text-white text-base flex items-center gap-2"><Palette className="h-4 w-4 text-orange-400" />Footer</CardTitle></CardHeader>
+          <Card className="bg-white border-slate-200">
+            <CardHeader><CardTitle className="text-slate-900 text-base flex items-center gap-2"><Palette className="h-4 w-4 text-orange-400" />Footer</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <Field textarea label="Teks Footer" value={values.footer_text} onChange={(v) => update("footer_text", v)} />
               <Field label="Copyright Footer" value={values.footer_copyright} onChange={(v) => update("footer_copyright", v)} />
@@ -157,13 +157,13 @@ export function AdminSettings() {
 
         {/* Hero */}
         <TabsContent value="hero" className="space-y-4">
-          <Card className="bg-slate-800/50 border-slate-700/50">
-            <CardHeader><CardTitle className="text-white text-base">Konten Hero Section</CardTitle></CardHeader>
+          <Card className="bg-white border-slate-200">
+            <CardHeader><CardTitle className="text-slate-900 text-base">Konten Hero Section</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <Field label="Headline Utama" value={values.hero_headline} onChange={(v) => update("hero_headline", v)} />
               <Field label="Sub-headline" value={values.hero_subheadline} onChange={(v) => update("hero_subheadline", v)} />
               <Field textarea label="Deskripsi" value={values.hero_description} onChange={(v) => update("hero_description", v)} />
-              <div className="grid sm:grid-cols-2 gap-4 pt-2 border-t border-slate-700">
+              <div className="grid sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200">
                 <Field label="Teks Tombol CTA 1" value={values.hero_cta1_text} onChange={(v) => update("hero_cta1_text", v)} />
                 <Field label="Link Tombol CTA 1" value={values.hero_cta1_link} onChange={(v) => update("hero_cta1_link", v)} />
                 <Field label="Teks Tombol CTA 2" value={values.hero_cta2_text} onChange={(v) => update("hero_cta2_text", v)} />
@@ -175,8 +175,8 @@ export function AdminSettings() {
 
         {/* Contact */}
         <TabsContent value="contact" className="space-y-4">
-          <Card className="bg-slate-800/50 border-slate-700/50">
-            <CardHeader><CardTitle className="text-white text-base">Informasi Kontak</CardTitle></CardHeader>
+          <Card className="bg-white border-slate-200">
+            <CardHeader><CardTitle className="text-slate-900 text-base">Informasi Kontak</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <Field textarea label="Alamat Lengkap" value={values.address} onChange={(v) => update("address", v)} />
               <div className="grid sm:grid-cols-2 gap-4">
@@ -188,8 +188,8 @@ export function AdminSettings() {
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800/50 border-slate-700/50">
-            <CardHeader><CardTitle className="text-white text-base">Media Sosial</CardTitle></CardHeader>
+          <Card className="bg-white border-slate-200">
+            <CardHeader><CardTitle className="text-slate-900 text-base">Media Sosial</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Instagram URL" value={values.instagram} onChange={(v) => update("instagram", v)} />
@@ -203,18 +203,18 @@ export function AdminSettings() {
 
         {/* About */}
         <TabsContent value="about" className="space-y-4">
-          <Card className="bg-slate-800/50 border-slate-700/50">
-            <CardHeader><CardTitle className="text-white text-base">Konten Tentang Kami</CardTitle></CardHeader>
+          <Card className="bg-white border-slate-200">
+            <CardHeader><CardTitle className="text-slate-900 text-base">Konten Tentang Kami</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <Field textarea label="Sejarah Organisasi" value={values.about_history} onChange={(v) => update("about_history", v)} />
               <Field textarea label="Visi" value={values.about_visi} onChange={(v) => update("about_visi", v)} />
               <div className="space-y-1.5">
-                <Label className="text-slate-300">Misi (pisahkan dengan tanda |)</Label>
+                <Label className="text-slate-700">Misi (pisahkan dengan tanda |)</Label>
                 <Textarea
                   value={values.about_misi}
                   onChange={(e) => update("about_misi", e.target.value)}
                   rows={5}
-                  className="bg-slate-900/50 border-slate-700 text-white"
+                  className="bg-slate-900/50 border-slate-200 text-slate-900"
                   placeholder="Misi 1|Misi 2|Misi 3"
                 />
                 <p className="text-xs text-slate-500">Setiap baris misi dipisahkan dengan karakter |</p>
@@ -225,8 +225,8 @@ export function AdminSettings() {
 
         {/* Map & SEO */}
         <TabsContent value="map" className="space-y-4">
-          <Card className="bg-slate-800/50 border-slate-700/50">
-            <CardHeader><CardTitle className="text-white text-base">Peta & Lokasi Markas</CardTitle></CardHeader>
+          <Card className="bg-white border-slate-200">
+            <CardHeader><CardTitle className="text-slate-900 text-base">Peta & Lokasi Markas</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Latitude" value={values.maps_lat} onChange={(v) => update("maps_lat", v)} />
@@ -236,8 +236,8 @@ export function AdminSettings() {
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800/50 border-slate-700/50">
-            <CardHeader><CardTitle className="text-white text-base">SEO Meta</CardTitle></CardHeader>
+          <Card className="bg-white border-slate-200">
+            <CardHeader><CardTitle className="text-slate-900 text-base">SEO Meta</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <Field label="Meta Keywords" value={values.meta_keywords} onChange={(v) => update("meta_keywords", v)} />
               <Field label="Meta Author" value={values.meta_author} onChange={(v) => update("meta_author", v)} />
@@ -247,12 +247,12 @@ export function AdminSettings() {
       </Tabs>
 
       {/* Save bar at bottom */}
-      <div className="sticky bottom-0 -mx-4 lg:-mx-6 px-4 lg:px-6 py-3 bg-slate-900/80 backdrop-blur border-t border-slate-700 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs text-slate-400">
+      <div className="sticky bottom-0 -mx-4 lg:-mx-6 px-4 lg:px-6 py-3 bg-slate-900/80 backdrop-blur border-t border-slate-200 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-xs text-slate-500">
           <CheckCircle2 className="h-4 w-4 text-emerald-400" />
           Perubahan otomatis tersinkron ke halaman utama setelah disimpan
         </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-orange-500 hover:bg-orange-600 text-white">
+        <Button onClick={handleSave} disabled={saving} className="bg-orange-500 hover:bg-orange-600 text-slate-900">
           {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
           Simpan
         </Button>
@@ -271,19 +271,19 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-slate-300 text-xs">{label}</Label>
+      <Label className="text-slate-700 text-xs">{label}</Label>
       {textarea ? (
         <Textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={3}
-          className="bg-slate-900/50 border-slate-700 text-white text-sm"
+          className="bg-white border-slate-200 text-slate-900 text-sm"
         />
       ) : (
         <Input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="bg-slate-900/50 border-slate-700 text-white text-sm"
+          className="bg-white border-slate-200 text-slate-900 text-sm"
         />
       )}
     </div>

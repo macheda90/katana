@@ -16,38 +16,39 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Plus, Search, Pencil, Trash2, Loader2, CheckCircle2, XCircle } from "lucide-react"
+import { Plus, Search, Pencil, Trash2, Loader2, CheckCircle2, XCircle, Upload, FileText, ImageIcon, Lock } from "lucide-react"
+import Image from "next/image"
 import { toast } from "sonner"
 import { canPerformAction } from "@/lib/admin-config"
-import type { SectionConfig } from "@/lib/admin-config"
+import type { SectionConfig, FieldConfig } from "@/lib/admin-config"
 
 const statusColors: Record<string, string> = {
-  ACTIVE: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400",
-  PENDING: "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
-  INACTIVE: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400",
-  REJECTED: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
-  VERIFIED: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400",
-  FAILED: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
-  BARU: "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400",
-  DIBACA: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400",
-  DIBALAS: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400",
-  SELESAI: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400",
-  DITINJAU: "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
-  DITINDAKLANJUTI: "bg-orange-100 text-orange-700 dark:bg-orange-950/40 dark:text-orange-400",
-  AKTIF: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
-  TERKENDALI: "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
-  UPCOMING: "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400",
-  ONGOING: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400",
-  DONE: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400",
-  CANCELLED: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
-  SIAGA: "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400",
-  BERJALAN: "bg-orange-100 text-orange-700 dark:bg-orange-950/40 dark:text-orange-400",
-  BAIK: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400",
-  RUSAK_RINGAN: "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
-  RUSAK_BERAT: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
-  RINGAN: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400",
-  SEDANG: "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
-  BERAT: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
+  ACTIVE: "bg-emerald-100 text-emerald-700",
+  PENDING: "bg-amber-100 text-amber-700",
+  INACTIVE: "bg-slate-100 text-slate-600",
+  REJECTED: "bg-red-100 text-red-700",
+  VERIFIED: "bg-emerald-100 text-emerald-700",
+  FAILED: "bg-red-100 text-red-700",
+  BARU: "bg-blue-100 text-blue-700",
+  DIBACA: "bg-slate-100 text-slate-600",
+  DIBALAS: "bg-emerald-100 text-emerald-700",
+  SELESAI: "bg-emerald-100 text-emerald-700",
+  DITINJAU: "bg-amber-100 text-amber-700",
+  DITINDAKLANJUTI: "bg-orange-100 text-orange-700",
+  AKTIF: "bg-red-100 text-red-700",
+  TERKENDALI: "bg-amber-100 text-amber-700",
+  UPCOMING: "bg-blue-100 text-blue-700",
+  ONGOING: "bg-emerald-100 text-emerald-700",
+  DONE: "bg-slate-100 text-slate-600",
+  CANCELLED: "bg-red-100 text-red-700",
+  SIAGA: "bg-blue-100 text-blue-700",
+  BERJALAN: "bg-orange-100 text-orange-700",
+  BAIK: "bg-emerald-100 text-emerald-700",
+  RUSAK_RINGAN: "bg-amber-100 text-amber-700",
+  RUSAK_BERAT: "bg-red-100 text-red-700",
+  RINGAN: "bg-emerald-100 text-emerald-700",
+  SEDANG: "bg-amber-100 text-amber-700",
+  BERAT: "bg-red-100 text-red-700",
 }
 
 function formatDate(d: any) {
@@ -161,13 +162,18 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-white">{section.title}</h2>
-          <p className="text-sm text-slate-400">Kelola data {section.title.toLowerCase()} organisasi</p>
+          <h2 className="text-2xl font-bold text-slate-900">{section.title}</h2>
+          <p className="text-sm text-slate-500">Kelola data {section.title.toLowerCase()} organisasi</p>
         </div>
-        <Button onClick={() => setCreating(true)} disabled={!canCreate} className="bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-40 disabled:cursor-not-allowed">
-          <Plus className="h-4 w-4 mr-1" />Tambah {section.singular}
-          {!canCreate && <span className="ml-2 text-[10px] opacity-70">(read-only)</span>}
-        </Button>
+        {canCreate ? (
+          <Button onClick={() => setCreating(true)} className="bg-orange-500 hover:bg-orange-600 text-white">
+            <Plus className="h-4 w-4 mr-1" />Tambah {section.singular}
+          </Button>
+        ) : (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-xs">
+            <Lock className="h-3.5 w-3.5" /> Read-only mode
+          </div>
+        )}
       </div>
 
       {/* Filters */}
@@ -178,12 +184,12 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
             placeholder={`Cari ${section.title.toLowerCase()}...`}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500"
+            className="pl-9 bg-white border-slate-200"
           />
         </div>
         {hasStatus && (
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-48 bg-slate-800/50 border-slate-700 text-white">
+            <SelectTrigger className="w-full sm:w-48 bg-white border-slate-200">
               <SelectValue placeholder="Filter Status" />
             </SelectTrigger>
             <SelectContent>
@@ -197,7 +203,7 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
       </div>
 
       {/* Table */}
-      <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         <div className="overflow-x-auto max-h-[60vh] overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center h-40 text-slate-400">
@@ -209,23 +215,33 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
             </div>
           ) : (
             <table className="w-full text-sm">
-              <thead className="bg-slate-900/50 sticky top-0 z-10">
+              <thead className="bg-slate-50 sticky top-0 z-10 border-b border-slate-200">
                 <tr>
                   {section.listColumns.map((col) => (
-                    <th key={col.key} className="text-left px-4 py-3 font-semibold text-slate-300 text-xs uppercase tracking-wider whitespace-nowrap">
+                    <th key={col.key} className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider whitespace-nowrap">
                       {col.label}
                     </th>
                   ))}
-                  <th className="text-right px-4 py-3 font-semibold text-slate-300 text-xs uppercase tracking-wider">Aksi</th>
+                  <th className="text-right px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/50">
+              <tbody className="divide-y divide-slate-100">
                 {records.map((record) => (
-                  <tr key={record.id} className="hover:bg-slate-700/30 transition-colors">
+                  <tr key={record.id} className="hover:bg-orange-50/30 transition-colors">
                     {section.listColumns.map((col) => (
-                      <td key={col.key} className="px-4 py-3 text-slate-200 whitespace-nowrap">
-                        {col.key === "status" ? (
-                          <Badge className={`${statusColors[record[col.key]] || "bg-slate-100 text-slate-700"} border-0`}>
+                      <td key={col.key} className="px-4 py-3 text-slate-700 whitespace-nowrap">
+                        {col.key === "photo" ? (
+                          <div className="relative h-10 w-10 rounded-full overflow-hidden bg-slate-100 shrink-0">
+                            {record.photo ? (
+                              <Image src={record.photo} alt={record.fullName || "Foto"} fill className="object-cover" sizes="40px" />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-slate-300">
+                                <ImageIcon className="h-5 w-5" />
+                              </div>
+                            )}
+                          </div>
+                        ) : col.key === "status" ? (
+                          <Badge className={`${statusColors[record[col.key]] || "bg-slate-100 text-slate-600"} border-0`}>
                             {record[col.key]}
                           </Badge>
                         ) : col.key === "amount" ? (
@@ -233,7 +249,9 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
                         ) : col.key.includes("Date") || col.key.includes("date") || col.key === "createdAt" || col.key === "publishedAt" || col.key === "startDate" ? (
                           formatDate(record[col.key])
                         ) : col.key === "title" || col.key === "name" || col.key === "fullName" ? (
-                          <span className="font-medium">{record[col.key]}</span>
+                          <span className="font-medium text-slate-900">{record[col.key]}</span>
+                        ) : col.key === "division" ? (
+                          <span className="text-slate-600">{record.division?.name || record.divisionId || "-"}</span>
                         ) : (
                           <span className="truncate max-w-xs block">{record[col.key] || "-"}</span>
                         )}
@@ -243,41 +261,38 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
                       <div className="flex items-center justify-end gap-1">
                         {sectionKey === "members" && record.status === "PENDING" && canEdit && (
                           <>
-                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-emerald-400 hover:bg-emerald-500/20" onClick={() => quickAction(record.id, { status: "ACTIVE", joinDate: new Date() }, "Anggota disetujui & diaktifkan")} title="Approve">
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-emerald-600 hover:bg-emerald-50" onClick={() => quickAction(record.id, { status: "ACTIVE", joinDate: new Date() }, "Anggota disetujui & diaktifkan")} title="Approve">
                               <CheckCircle2 className="h-4 w-4" />
                             </Button>
-                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-400 hover:bg-red-500/20" onClick={() => quickAction(record.id, { status: "REJECTED" }, "Anggota ditolak")} title="Reject">
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-600 hover:bg-red-50" onClick={() => quickAction(record.id, { status: "REJECTED" }, "Anggota ditolak")} title="Reject">
                               <XCircle className="h-4 w-4" />
                             </Button>
                           </>
                         )}
                         {sectionKey === "donations" && record.status === "PENDING" && canEdit && (
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-emerald-400 hover:bg-emerald-500/20" onClick={() => quickAction(record.id, { status: "VERIFIED" }, "Donasi diverifikasi")} title="Verify">
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-emerald-600 hover:bg-emerald-50" onClick={() => quickAction(record.id, { status: "VERIFIED" }, "Donasi diverifikasi")} title="Verify">
                             <CheckCircle2 className="h-4 w-4" />
                           </Button>
                         )}
                         {sectionKey === "contacts" && record.status === "BARU" && canEdit && (
-                          <Button size="sm" variant="ghost" className="h-8 px-2 text-blue-400 hover:bg-blue-500/20" onClick={() => quickAction(record.id, { status: "DIBACA" }, "Pesan ditandai dibaca")}>
+                          <Button size="sm" variant="ghost" className="h-8 px-2 text-blue-600 hover:bg-blue-50" onClick={() => quickAction(record.id, { status: "DIBACA" }, "Pesan ditandai dibaca")}>
                             Tandai Dibaca
                           </Button>
                         )}
                         {sectionKey === "incidents" && record.status === "BARU" && canEdit && (
-                          <Button size="sm" variant="ghost" className="h-8 px-2 text-amber-400 hover:bg-amber-500/20" onClick={() => quickAction(record.id, { status: "DITINJAU" }, "Laporan ditinjau")}>
+                          <Button size="sm" variant="ghost" className="h-8 px-2 text-amber-600 hover:bg-amber-50" onClick={() => quickAction(record.id, { status: "DITINJAU" }, "Laporan ditinjau")}>
                             Tinjau
                           </Button>
                         )}
                         {canEdit && (
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-slate-400 hover:bg-slate-600/50" onClick={() => setEditing(record)} title="Edit">
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-slate-500 hover:bg-slate-100" onClick={() => setEditing(record)} title="Edit">
                             <Pencil className="h-4 w-4" />
                           </Button>
                         )}
                         {canDelete && (
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-400 hover:bg-red-500/20" onClick={() => setDeleteId(record.id)} title="Hapus">
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-600 hover:bg-red-50" onClick={() => setDeleteId(record.id)} title="Hapus">
                             <Trash2 className="h-4 w-4" />
                           </Button>
-                        )}
-                        {!canEdit && !canDelete && (
-                          <span className="text-xs text-slate-500 italic px-2">read-only</span>
                         )}
                       </div>
                     </td>
@@ -288,7 +303,7 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
           )}
         </div>
         {!loading && records.length > 0 && (
-          <div className="px-4 py-3 border-t border-slate-700/50 text-xs text-slate-400">
+          <div className="px-4 py-3 border-t border-slate-200 text-xs text-slate-500">
             Menampilkan {records.length} data
           </div>
         )}
@@ -358,59 +373,22 @@ function RecordForm({
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
-          <DialogTitle>{record ? `Edit ${section.singular}` : `Tambah ${section.singular}`}</DialogTitle>
+          <DialogTitle className="text-slate-900">{record ? `Edit ${section.singular}` : `Tambah ${section.singular}`}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
             {section.fields.map((field) => (
-              <div key={field.name} className={field.type === "textarea" ? "sm:col-span-2 space-y-1.5" : "space-y-1.5"}>
-                <Label htmlFor={field.name}>
-                  {field.label}
-                  {field.required && <span className="text-red-500 ml-0.5">*</span>}
-                </Label>
-                {field.type === "textarea" ? (
-                  <Textarea
-                    id={field.name}
-                    value={(formData[field.name] as string) || ""}
-                    onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
-                    rows={3}
-                  />
-                ) : field.type === "select" ? (
-                  <Select
-                    value={(formData[field.name] as string) || ""}
-                    onValueChange={(v) => setFormData({ ...formData, [field.name]: v })}
-                  >
-                    <SelectTrigger><SelectValue placeholder={`Pilih ${field.label}`} /></SelectTrigger>
-                    <SelectContent>
-                      {field.options?.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                ) : field.type === "boolean" ? (
-                  <Select
-                    value={formData[field.name] ? "true" : "false"}
-                    onValueChange={(v) => setFormData({ ...formData, [field.name]: v === "true" })}
-                  >
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">Ya</SelectItem>
-                      <SelectItem value="false">Tidak</SelectItem>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <Input
-                    id={field.name}
-                    type={field.type === "number" ? "number" : field.type === "date" ? "date" : "text"}
-                    value={(formData[field.name] as string) || ""}
-                    onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
-                    required={field.required}
-                  />
-                )}
-              </div>
+              <FieldInput
+                key={field.name}
+                field={field}
+                value={formData[field.name]}
+                onChange={(v) => setFormData({ ...formData, [field.name]: v })}
+              />
             ))}
           </div>
-          <DialogFooter>
+          <DialogFooter className="pt-4 border-t">
             <Button type="button" variant="outline" onClick={onClose}>Batal</Button>
             <Button type="submit" disabled={saving} className="bg-orange-500 hover:bg-orange-600 text-white">
               {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
@@ -420,5 +398,93 @@ function RecordForm({
         </form>
       </DialogContent>
     </Dialog>
+  )
+}
+
+function FieldInput({ field, value, onChange }: { field: FieldConfig; value: unknown; onChange: (v: string) => void }) {
+  const colSpan = field.full || field.type === "textarea" ? "sm:col-span-2" : ""
+
+  return (
+    <div className={`${colSpan} space-y-1.5`}>
+      <Label htmlFor={field.name} className="text-slate-700 text-xs">
+        {field.label}
+        {field.required && <span className="text-red-500 ml-0.5">*</span>}
+      </Label>
+
+      {field.type === "textarea" ? (
+        <Textarea
+          id={field.name}
+          value={(value as string) || ""}
+          onChange={(e) => onChange(e.target.value)}
+          rows={3}
+          placeholder={field.placeholder}
+          className="bg-white border-slate-200 text-sm"
+        />
+      ) : field.type === "select" ? (
+        <Select value={(value as string) || ""} onValueChange={onChange}>
+          <SelectTrigger className="bg-white border-slate-200 text-sm"><SelectValue placeholder={`Pilih ${field.label}`} /></SelectTrigger>
+          <SelectContent>
+            {field.options?.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      ) : field.type === "boolean" ? (
+        <Select value={value ? "true" : "false"} onValueChange={onChange}>
+          <SelectTrigger className="bg-white border-slate-200 text-sm"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="true">Ya</SelectItem>
+            <SelectItem value="false">Tidak</SelectItem>
+          </SelectContent>
+        </Select>
+      ) : field.type === "image" ? (
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <Input
+              id={field.name}
+              type="text"
+              value={(value as string) || ""}
+              onChange={(e) => onChange(e.target.value)}
+              placeholder={field.placeholder || "URL gambar"}
+              className="bg-white border-slate-200 text-sm flex-1"
+            />
+            <Button type="button" variant="outline" size="icon" className="shrink-0 border-slate-200" title="Upload">
+              <Upload className="h-4 w-4 text-slate-400" />
+            </Button>
+          </div>
+          {value ? (
+            <div className="relative h-24 w-24 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
+              <Image src={value as string} alt={field.label} fill className="object-cover" sizes="96px" />
+            </div>
+          ) : (
+            <div className="flex h-24 w-24 items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50">
+              <ImageIcon className="h-8 w-8 text-slate-300" />
+            </div>
+          )}
+        </div>
+      ) : field.type === "file" ? (
+        <div className="flex gap-2">
+          <Input
+            id={field.name}
+            type="text"
+            value={(value as string) || ""}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={field.placeholder || "URL file"}
+            className="bg-white border-slate-200 text-sm flex-1"
+          />
+          <Button type="button" variant="outline" size="icon" className="shrink-0 border-slate-200" title="Upload File">
+            <FileText className="h-4 w-4 text-slate-400" />
+          </Button>
+        </div>
+      ) : (
+        <Input
+          id={field.name}
+          type={field.type === "number" ? "number" : field.type === "date" ? "date" : "text"}
+          value={(value as string) || ""}
+          onChange={(e) => onChange(e.target.value)}
+          required={field.required}
+          placeholder={field.placeholder}
+          className="bg-white border-slate-200 text-sm"
+        />
+      )}
+    </div>
   )
 }

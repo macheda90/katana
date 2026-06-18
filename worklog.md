@@ -112,3 +112,27 @@ Stage Summary:
 - Pending count badges + "Perlu Tindakan" alert for approval workflow
 - Demo users: admin@katanarescue.cikampek.id/admin123, pengelola@.../pengelola123, pengurus@.../pengurus123, koordinator@.../koord123
 - Lint: 0 errors, 0 warnings
+
+---
+Task ID: light-theme-crud-fix-seed
+Agent: Z.ai Code (main)
+Task: Fix back office appearance (light theme), fix Tambah/Edit button bug, clean sample data, re-seed realistic data, add Foto/Bio/File Sertifikat to members
+
+Work Log:
+- Fixed critical bug: Dialog/AlertDialog/Select/Popover/DropdownMenu z-index changed from z-50 to z-[200] to appear above AdminPortal (z-[100]). This was the root cause of Tambah/Edit buttons not responding - dialogs were rendering behind the admin portal overlay.
+- Added new fields to Member Prisma model: bio (String?), certFile (String?). Ran db:push + db:generate.
+- Updated admin-config.ts: added 'file' and 'image' field types; added bio, photo (image), certFile (file) fields to members section; added photo column to listColumns.
+- Rewrote ALL admin components for light theme: AdminPortal (white sidebar, slate-50 main), AdminDashboard (white cards, light charts), DataManager (white table, light inputs), AdminSettings (white cards).
+- Added image/file field rendering in RecordForm: 'image' type shows URL input + upload button + image preview; 'file' type shows URL input + file button.
+- Added photo thumbnail column in members table with circular avatar preview.
+- Cleaned ALL data from database. Wrote new realistic seed: 33 members with pravatar.cc photos, detailed bios, cert file URLs; 20 activities; 10 news; 10 agenda; 6 testimonials; 8 partners; 6 SAR missions; 18 inventory items with serial numbers; 6 disaster records; 7 donations; 3 contact messages; 4 incident reports.
+- Verified CRUD API: POST /api/admin/members created member with bio, photo, certFile - all new fields saved.
+- VLM verified light theme: "light color theme admin panel, white background sidebar with orange accent"
+- Lint: 0 errors, 0 warnings
+
+Stage Summary:
+- Back office light theme: white sidebar, white cards, slate-50 background
+- Tambah/Edit bug FIXED: z-index z-50 -> z-[200] for all overlay components
+- Member model: photo (image), bio (textarea), certFile (file) - all editable with preview
+- 33 realistic members with real names, photos, bios, certifications, addresses
+- CRUD verified end-to-end via API

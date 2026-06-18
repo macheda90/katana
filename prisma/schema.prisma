@@ -103,10 +103,11 @@ model Member {
   occupation      String?
   skills          String?  // comma separated
   certifications  String?
+  bio             String?
 
   photo           String?
   ktpPhoto        String?
-  certPhoto       String?
+  certFile        String?
 
   status          String   @default("PENDING") // PENDING, ACTIVE, INACTIVE, REJECTED
   joinDate        DateTime?

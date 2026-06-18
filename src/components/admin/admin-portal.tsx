@@ -45,7 +45,6 @@ export function AdminPortal() {
     checkAuth().finally(() => setChecked(true))
   }, [checkAuth])
 
-  // Fetch pending counts for badges
   useEffect(() => {
     if (!user || !showAdmin) return
     const fetchCounts = async () => {
@@ -71,7 +70,6 @@ export function AdminPortal() {
 
   const totalPending = pendingCounts.members + pendingCounts.donations + pendingCounts.contacts + pendingCounts.incidents
 
-  // Filter nav items based on role
   const navItems = useMemo(() => {
     if (!user) return []
     return allNavItems.filter((item) => {
@@ -81,8 +79,7 @@ export function AdminPortal() {
     })
   }, [user])
 
-  // Derive a safe active section based on role (no setState in effect)
-  const safeActiveSection = useMemo(() => {
+  const effectiveSection = useMemo(() => {
     if (!user) return "dashboard"
     if (activeSection === "dashboard") return "dashboard"
     if (activeSection === "settings") {
@@ -94,10 +91,7 @@ export function AdminPortal() {
   }, [user, activeSection])
 
   if (!checked) return null
-
   if (!user || !showAdmin) return null
-
-  const effectiveSection = safeActiveSection
 
   const handleExit = () => {
     setShowAdmin(false)
@@ -114,26 +108,27 @@ export function AdminPortal() {
   const currentSection = effectiveSection !== "dashboard" && effectiveSection !== "settings" ? adminSections[effectiveSection] : null
 
   return (
-    <div className="fixed inset-0 z-[100] bg-[#0F172A] flex">
+    <div className="fixed inset-0 z-[100] bg-slate-50 flex">
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
+      {/* Sidebar */}
       <aside className={cn(
-        "fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#0a0f1d] border-r border-slate-800 flex flex-col transition-transform duration-300",
+        "fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300",
         sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
-        <div className="flex items-center justify-between p-4 border-b border-slate-800">
+        <div className="flex items-center justify-between p-4 border-b border-slate-200">
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-orange-600">
               <Shield className="h-5 w-5 text-white" />
             </div>
             <div className="leading-none">
-              <div className="text-sm font-extrabold text-white">KATANA<span className="text-orange-500">RESCUE</span></div>
-              <div className="text-[10px] text-slate-500">Back Office</div>
+              <div className="text-sm font-extrabold text-slate-900">KATANA<span className="text-orange-500">RESCUE</span></div>
+              <div className="text-[10px] text-slate-400">Back Office</div>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="lg:hidden text-slate-400" onClick={() => setSidebarOpen(false)}>
+          <Button variant="ghost" size="icon" className="lg:hidden text-slate-500" onClick={() => setSidebarOpen(false)}>
             <X className="h-5 w-5" />
           </Button>
         </div>
@@ -146,14 +141,17 @@ export function AdminPortal() {
               className={cn(
                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                 effectiveSection === item.key
-                  ? "bg-orange-500 text-white"
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  ? "bg-orange-500 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-orange-50 hover:text-orange-600"
               )}
             >
               <item.icon className="h-4 w-4 shrink-0" />
               <span className="flex-1 text-left">{item.label}</span>
               {pendingCounts[item.key as keyof typeof pendingCounts] > 0 && (
-                <Badge className="bg-red-500 text-white text-[10px] px-1.5 py-0 min-w-[20px] justify-center">
+                <Badge className={cn(
+                  "text-[10px] px-1.5 py-0 min-w-[20px] justify-center",
+                  effectiveSection === item.key ? "bg-white text-orange-600" : "bg-red-500 text-white"
+                )}>
                   {pendingCounts[item.key as keyof typeof pendingCounts]}
                 </Badge>
               )}
@@ -161,56 +159,57 @@ export function AdminPortal() {
           ))}
         </nav>
 
-        <div className="p-3 border-t border-slate-800">
-          <div className="flex items-center gap-3 p-2 rounded-lg bg-slate-800/50 mb-2">
+        <div className="p-3 border-t border-slate-200">
+          <div className="flex items-center gap-3 p-2 rounded-lg bg-slate-50 mb-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-white font-bold text-sm">
               {user.name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-semibold text-white truncate">{user.name}</div>
-              <Badge className="bg-orange-500/20 text-orange-400 border-0 text-[10px] mt-0.5">{user.role}</Badge>
+              <div className="text-sm font-semibold text-slate-900 truncate">{user.name}</div>
+              <Badge className="bg-orange-100 text-orange-700 border-0 text-[10px] mt-0.5">{user.role}</Badge>
             </div>
           </div>
-          <Button onClick={handleExit} variant="outline" className="w-full border-slate-700 text-slate-300 hover:bg-slate-800 mb-2">
+          <Button onClick={handleExit} variant="outline" className="w-full border-slate-200 text-slate-600 hover:bg-slate-50 mb-2">
             <ArrowLeft className="h-4 w-4 mr-2" />Kembali ke Situs
           </Button>
-          <Button onClick={handleLogout} variant="outline" className="w-full border-red-900 text-red-400 hover:bg-red-950/40">
+          <Button onClick={handleLogout} variant="outline" className="w-full border-red-200 text-red-600 hover:bg-red-50">
             <LogOut className="h-4 w-4 mr-2" />Keluar
           </Button>
         </div>
       </aside>
 
+      {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="flex items-center justify-between gap-3 px-4 lg:px-6 py-3 border-b border-slate-800 bg-[#0a0f1d]">
+        <header className="flex items-center justify-between gap-3 px-4 lg:px-6 py-3 border-b border-slate-200 bg-white">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" className="lg:hidden text-slate-400" onClick={() => setSidebarOpen(true)}>
+            <Button variant="ghost" size="icon" className="lg:hidden text-slate-500" onClick={() => setSidebarOpen(true)}>
               <Menu className="h-5 w-5" />
             </Button>
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-slate-500 hidden sm:inline">Admin</span>
-              <ChevronRight className="hidden sm:inline h-3 w-3 text-slate-600" />
-              <span className="font-semibold text-white">{currentNav?.label}</span>
+              <span className="text-slate-400 hidden sm:inline">Admin</span>
+              <ChevronRight className="hidden sm:inline h-3 w-3 text-slate-300" />
+              <span className="font-semibold text-slate-900">{currentNav?.label}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {totalPending > 0 && (
               <button
                 onClick={() => setActiveSection("members")}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-semibold hover:bg-red-500/30 transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition-colors"
                 title={`${pendingCounts.members} anggota, ${pendingCounts.donations} donasi, ${pendingCounts.contacts} pesan, ${pendingCounts.incidents} laporan menunggu`}
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-red-400 animate-pulse" />
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
                 {totalPending} Perlu Tindakan
               </button>
             )}
-            <Badge className="bg-emerald-500/20 text-emerald-400 border-0">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse" />
+            <Badge className="bg-emerald-50 text-emerald-600 border-0">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse" />
               Online
             </Badge>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6 bg-[#0F172A]">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6 bg-slate-50">
           {effectiveSection === "dashboard" ? (
             <AdminDashboard />
           ) : effectiveSection === "settings" ? (
