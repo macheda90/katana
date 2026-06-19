@@ -1,9 +1,12 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { Calendar, User, ArrowRight, Eye } from "lucide-react"
 import { SectionHeading } from "@/components/site/section-heading"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { useView } from "@/lib/view-store"
 
 const categoryColors: Record<string, string> = {
   ORGANISASI: "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400",
@@ -18,6 +21,7 @@ function formatDate(d: Date | string) {
 }
 
 export function NewsSection({ news }: { news: any[] }) {
+  const { setView } = useView()
   if (!news || news.length === 0) return null
   const [featured, ...rest] = news
 
@@ -37,10 +41,12 @@ export function NewsSection({ news }: { news: any[] }) {
               Berita organisasi, bencana, edukasi, dan informasi terbaru seputar aktivitas Katana Rescue.
             </p>
           </div>
-          <Button asChild variant="outline" className="border-orange-500 text-orange-600 hover:bg-orange-50">
-            <Link href="#berita">
-              Semua Berita <ArrowRight className="h-4 w-4 ml-1" />
-            </Link>
+          <Button
+            onClick={() => setView('all-news')}
+            variant="outline"
+            className="border-orange-500 text-orange-600 hover:bg-orange-50"
+          >
+            Semua Berita <ArrowRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
 

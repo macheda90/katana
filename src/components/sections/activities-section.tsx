@@ -1,9 +1,12 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { MapPin, Calendar, ArrowRight } from "lucide-react"
 import { SectionHeading } from "@/components/site/section-heading"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { useView } from "@/lib/view-store"
 
 const categoryColors: Record<string, string> = {
   RESCUE: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
@@ -26,6 +29,7 @@ function formatDate(d: Date | string) {
 }
 
 export function ActivitiesSection({ activities }: { activities: any[] }) {
+  const { setView } = useView()
   return (
     <section id="kegiatan" className="py-20 bg-white dark:bg-[#0a0f1d]">
       <div className="container mx-auto px-4">
@@ -42,10 +46,12 @@ export function ActivitiesSection({ activities }: { activities: any[] }) {
               Dokumentasi kegiatan rescue, sosial, pelatihan, simulasi, dan penanggulangan bencana tim Katana Rescue.
             </p>
           </div>
-          <Button asChild variant="outline" className="border-orange-500 text-orange-600 hover:bg-orange-50">
-            <Link href="#kegiatan">
-              Semua Kegiatan <ArrowRight className="h-4 w-4 ml-1" />
-            </Link>
+          <Button
+            onClick={() => setView('all-activities')}
+            variant="outline"
+            className="border-orange-500 text-orange-600 hover:bg-orange-50"
+          >
+            Semua Kegiatan <ArrowRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
 

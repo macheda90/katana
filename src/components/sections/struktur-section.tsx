@@ -1,5 +1,9 @@
-import { Crown, User, FileText, DollarSign } from "lucide-react"
+"use client"
+
+import { Crown, User, FileText, DollarSign, ArrowRight } from "lucide-react"
 import { SectionHeading } from "@/components/site/section-heading"
+import { Button } from "@/components/ui/button"
+import { useView } from "@/lib/view-store"
 
 const pengurus = [
   { name: "Andi Pratama", role: "Ketua Umum", icon: Crown, color: "from-orange-500 to-orange-600", desc: "Memimpin dan mengarahkan seluruh program organisasi" },
@@ -9,6 +13,7 @@ const pengurus = [
 ]
 
 export function StrukturSection() {
+  const { setView } = useView()
   return (
     <section id="struktur" className="py-20 bg-white dark:bg-[#0a0f1d]">
       <div className="container mx-auto px-4">
@@ -40,7 +45,7 @@ export function StrukturSection() {
         {/* Koordinator Divisi */}
         <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-6 md:p-8 border border-slate-100 dark:border-slate-800">
           <h3 className="text-xl font-bold text-[#0F172A] dark:text-white mb-6 text-center">Koordinator Divisi</h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
             {[
               { name: "Andi Pratama", div: "Water Rescue" },
               { name: "Rudi Hartono", div: "Vertical Rescue" },
@@ -61,6 +66,17 @@ export function StrukturSection() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Selengkapnya Button */}
+          <div className="text-center pt-4 border-t border-slate-200 dark:border-slate-700">
+            <Button
+              onClick={() => setView('all-struktur')}
+              variant="outline"
+              className="border-orange-500 text-orange-600 hover:bg-orange-50"
+            >
+              Selengkapnya <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
           </div>
         </div>
       </div>

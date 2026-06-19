@@ -136,3 +136,35 @@ Stage Summary:
 - Member model: photo (image), bio (textarea), certFile (file) - all editable with preview
 - 33 realistic members with real names, photos, bios, certifications, addresses
 - CRUD verified end-to-end via API
+
+---
+Task ID: detail-pages
+Agent: Z.ai Code (main)
+Task: Add detail pages for Semua Kegiatan, Semua Berita, and Selengkapnya on Struktur section
+
+Work Log:
+- Created view store (src/lib/view-store.ts) with Zustand for client-side view switching: 'home' | 'all-activities' | 'all-news' | 'all-struktur' - uses single / route with virtual pages
+- Updated API routes: /api/activities and /api/news now support limit=0 to fetch ALL records (previously capped at 6/10)
+- Created AllActivitiesPage (client component): dark hero header with back button, category filter dropdown, grid of all activity cards with photo/category/date/location/division
+- Created AllNewsPage (client component): dark hero header, category filter, featured news banner + grid, clickable cards open detail Dialog with full content
+- Created AllStrukturPage (client component): dark hero header, pengurus harian cards (4 leaders), all 8 divisions with member lists (photo, name, member number, occupation, bio preview)
+- Created PageContent wrapper (client) that switches between home view and detail pages based on view store state
+- Updated ActivitiesSection: converted to client component, "Semua Kegiatan" button now calls setView('all-activities') instead of hash link
+- Updated NewsSection: converted to client component, "Semua Berita" button now calls setView('all-news')
+- Updated StrukturSection: converted to client component, added "Selengkapnya" button that calls setView('all-struktur')
+- Updated page.tsx: fetches all active members (id, fullName, memberNumber, photo, bio, occupation, divisionId) and passes to PageContent wrapper along with divisions
+- Verified with Agent Browser:
+  - "Semua Kegiatan" -> opens page with 21 activity cards, category filter works
+  - "Semua Berita" -> opens page with 9 news articles, featured + grid layout
+  - "Selengkapnya" on Struktur -> opens page showing all 8 divisions with member lists
+  - "Kembali ke Beranda" button on all pages returns to homepage
+  - All divisions + members shown on struktur page (Water Rescue, Drone SAR, etc.)
+- Lint: 0 errors, 0 warnings
+
+Stage Summary:
+- 3 new virtual detail pages (all-activities, all-news, all-struktur) accessible via buttons on homepage
+- All pages have back button to return to beranda
+- Activities & News pages have category filter dropdowns
+- News page has clickable cards opening detail dialog with full content
+- Struktur page shows all 8 divisions with their active members (photo, name, bio)
+- Single / route maintained (view switching via Zustand client-side state)

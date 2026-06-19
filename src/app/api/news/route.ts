@@ -4,7 +4,8 @@ import { db } from '@/lib/db'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const limit = parseInt(searchParams.get('limit') || '10')
+    const limitParam = searchParams.get('limit')
+    const limit = limitParam ? parseInt(limitParam) : 10
     const category = searchParams.get('category')
     const featured = searchParams.get('featured')
 
@@ -15,16 +16,18 @@ export async function GET(req: NextRequest) {
     const news = await db.news.findMany({
       where,
       orderBy: { publishedAt: 'desc' },
-      take: limit,
+      ...(limit > 0 ? { take: limit } : {}),
       select: {
         id: true,
         title: true,
         slug: true,
         category: true,
         excerpt: true,
+        content: true,
         thumbnail: true,
         author: true,
         views: true,
+        featured: true,
         publishedAt: true,
       },
     })

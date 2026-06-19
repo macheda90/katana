@@ -21,6 +21,7 @@ import { DisasterSection } from "@/components/sections/disaster-section"
 import { MapSection } from "@/components/sections/map-section"
 import { ContactSection } from "@/components/sections/contact-section"
 import { AdminPortal } from "@/components/admin/admin-portal"
+import { PageContent } from "@/components/pages/page-content"
 
 async function getStats() {
   try {
@@ -42,7 +43,7 @@ async function getStats() {
 export const revalidate = 30
 
 export default async function HomePage() {
-  const [stats, divisions, activities, news, agenda, testimonials, partners, settings] = await Promise.all([
+  const [stats, divisions, activities, news, agenda, testimonials, partners, settings, allMembers] = await Promise.all([
     getStats(),
     db.division.findMany({
       orderBy: { order: "asc" },
@@ -66,31 +67,37 @@ export default async function HomePage() {
     db.testimonial.findMany({ orderBy: { order: "asc" } }),
     db.partner.findMany({ orderBy: { order: "asc" } }),
     getSiteSettings(),
+    db.member.findMany({
+      where: { status: "ACTIVE" },
+      select: { id: true, fullName: true, memberNumber: true, photo: true, bio: true, occupation: true, divisionId: true, status: true },
+    }),
   ])
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-[#0a0f1d]">
       <Navbar />
-      <main className="flex-1">
-        <HeroSection stats={stats} settings={settings} />
-        <StatsSection stats={stats} />
-        <AboutSection settings={settings} />
-        <DivisionsSection divisions={divisions} />
-        <ActivitiesSection activities={activities} />
-        <NewsSection news={news} />
-        <AgendaSection agenda={agenda} />
-        <StrukturSection />
-        <DisasterSection />
-        <EdukasiSection />
-        <DashboardSection />
-        <RegisterSection divisions={divisions} />
-        <LaporSection />
-        <DonasiSection />
-        <TestimonialsSection testimonials={testimonials} />
-        <PartnersSection partners={partners} />
-        <MapSection settings={settings} />
-        <ContactSection settings={settings} />
-      </main>
+      <PageContent members={allMembers} divisions={divisions}>
+        <main className="flex-1">
+          <HeroSection stats={stats} settings={settings} />
+          <StatsSection stats={stats} />
+          <AboutSection settings={settings} />
+          <DivisionsSection divisions={divisions} />
+          <ActivitiesSection activities={activities} />
+          <NewsSection news={news} />
+          <AgendaSection agenda={agenda} />
+          <StrukturSection />
+          <DisasterSection />
+          <EdukasiSection />
+          <DashboardSection />
+          <RegisterSection divisions={divisions} />
+          <LaporSection />
+          <DonasiSection />
+          <TestimonialsSection testimonials={testimonials} />
+          <PartnersSection partners={partners} />
+          <MapSection settings={settings} />
+          <ContactSection settings={settings} />
+        </main>
+      </PageContent>
       <Footer settings={settings} />
       <AdminPortal />
     </div>

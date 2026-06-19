@@ -4,7 +4,8 @@ import { db } from '@/lib/db'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const limit = parseInt(searchParams.get('limit') || '6')
+    const limitParam = searchParams.get('limit')
+    const limit = limitParam ? parseInt(limitParam) : 6
     const category = searchParams.get('category')
 
     const where: Record<string, unknown> = {}
@@ -13,7 +14,7 @@ export async function GET(req: NextRequest) {
     const activities = await db.activity.findMany({
       where,
       orderBy: { activityDate: 'desc' },
-      take: limit,
+      ...(limit > 0 ? { take: limit } : {}),
       include: {
         division: { select: { name: true, icon: true, color: true } },
       },
