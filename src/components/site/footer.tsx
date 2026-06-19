@@ -7,7 +7,6 @@ const quickLinks = [
   { label: "Berita", href: "#berita" },
   { label: "Agenda", href: "#agenda" },
   { label: "Divisi", href: "#divisi" },
-  { label: "Donasi", href: "#donasi" },
   { label: "Kontak", href: "#kontak" },
 ]
 

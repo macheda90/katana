@@ -16,7 +16,6 @@ import { EdukasiSection } from "@/components/sections/edukasi-section"
 import { DashboardSection } from "@/components/sections/dashboard-section"
 import { RegisterSection } from "@/components/sections/register-section"
 import { LaporSection } from "@/components/sections/lapor-section"
-import { DonasiSection } from "@/components/sections/donasi-section"
 import { DisasterSection } from "@/components/sections/disaster-section"
 import { MapSection } from "@/components/sections/map-section"
 import { ContactSection } from "@/components/sections/contact-section"
@@ -91,7 +90,6 @@ export default async function HomePage() {
           <DashboardSection />
           <RegisterSection divisions={divisions} />
           <LaporSection />
-          <DonasiSection />
           <TestimonialsSection testimonials={testimonials} />
           <PartnersSection partners={partners} />
           <MapSection settings={settings} />

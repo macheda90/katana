@@ -53,7 +53,6 @@ const navMenus = [
   { label: "Agenda", href: "#agenda" },
   { label: "Divisi", href: "#divisi" },
   { label: "Edukasi", href: "#edukasi" },
-  { label: "Donasi", href: "#donasi" },
   { label: "Kontak", href: "#kontak" },
 ]
 

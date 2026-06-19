@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
   Shield, LayoutDashboard, Users, Newspaper, Activity, Calendar,
-  Crosshair, Package, Heart, MessageSquare, AlertTriangle, CloudAlert,
+  Crosshair, Package, MessageSquare, AlertTriangle, CloudAlert,
   Star, Building2, Layers, LogOut, Menu, X, ChevronRight, ArrowLeft, Settings,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -24,7 +24,6 @@ const allNavItems = [
   { key: "agenda", label: "Agenda", icon: Calendar },
   { key: "missions", label: "Misi SAR", icon: Crosshair },
   { key: "inventory", label: "Inventaris", icon: Package },
-  { key: "donations", label: "Donasi", icon: Heart },
   { key: "contacts", label: "Pesan Kontak", icon: MessageSquare },
   { key: "incidents", label: "Laporan", icon: AlertTriangle },
   { key: "disasters", label: "Data Bencana", icon: CloudAlert },
