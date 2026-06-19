@@ -41,6 +41,8 @@ export function AdminPortal() {
   const [pendingCounts, setPendingCounts] = useState({ members: 0, donations: 0, contacts: 0, incidents: 0 })
 
   useEffect(() => {
+    // Rehydrate from localStorage first (skipHydration avoids SSR mismatch)
+    useAuth.persist.rehydrate()
     checkAuth().finally(() => setChecked(true))
   }, [checkAuth])
 

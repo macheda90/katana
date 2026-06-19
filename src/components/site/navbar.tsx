@@ -61,14 +61,17 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [loginOpen, setLoginOpen] = useState(false)
-  const { user, checkAuth, logout, setShowAdmin } = useAuth()
+  const { user, checkAuth, logout, setShowAdmin, setHasMounted, hasMounted } = useAuth()
 
   useEffect(() => {
+    // Rehydrate from localStorage first (skipHydration is true to avoid SSR mismatch)
+    useAuth.persist.rehydrate()
+    setHasMounted(true)
     const onScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener("scroll", onScroll)
     checkAuth()
     return () => window.removeEventListener("scroll", onScroll)
-  }, [checkAuth])
+  }, [checkAuth, setHasMounted])
 
   const handleLogout = async () => {
     await logout()
@@ -180,8 +183,10 @@ export function Navbar() {
                 </Link>
               </Button>
 
-              {/* Login / User Menu */}
-              {user ? (
+              {/* Login / User Menu - gated by hasMounted to prevent hydration mismatch */}
+              {!hasMounted ? (
+                <div className="h-8 w-16" aria-hidden="true" />
+              ) : user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="gap-2 px-2">
