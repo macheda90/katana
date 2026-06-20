@@ -32,6 +32,26 @@ export async function GET(
     where.status = status
   }
 
+  // Special handling for relational display in Pengurus
+  if (section === 'pengurus') {
+    const records = await model.findMany({
+      where: where as any,
+      orderBy: { startedAt: 'desc' },
+      take: 200,
+      include: { member: true, position: true },
+    })
+
+    // normalize for DataManager columns
+    const normalized = records.map((r: any) => ({
+      ...r,
+      memberAvatar: r.member?.avatar || r.avatar,
+      memberName: r.member?.fullName || r.memberId,
+      positionTitle: r.position?.title || r.positionId,
+    }))
+
+    return NextResponse.json(normalized)
+  }
+
   const records = await model.findMany({
     where,
     orderBy: { createdAt: 'desc' },
@@ -39,6 +59,7 @@ export async function GET(
   })
 
   return NextResponse.json(records)
+
 }
 
 export async function POST(
@@ -98,7 +119,7 @@ export async function POST(
         ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || null,
       },
     })
-  } catch {}
+  } catch { }
 
   try {
     const record = await model.create({ data })

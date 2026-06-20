@@ -7,6 +7,7 @@ import { SectionHeading } from "@/components/site/section-heading"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useView } from "@/lib/view-store"
+import { formatDateId } from "@/lib/format"
 
 const categoryColors: Record<string, string> = {
   RESCUE: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
@@ -22,10 +23,6 @@ const categoryLabels: Record<string, string> = {
   PELATIHAN: "Pelatihan",
   SIMULASI: "Simulasi",
   BENCANA: "Bencana",
-}
-
-function formatDate(d: Date | string) {
-  return new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
 }
 
 export function ActivitiesSection({ activities }: { activities: any[] }) {
@@ -79,7 +76,7 @@ export function ActivitiesSection({ activities }: { activities: any[] }) {
                 <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 mb-2">
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3.5 w-3.5" />
-                    {formatDate(a.activityDate)}
+                    {formatDateId(a.activityDate)}
                   </span>
                   <span className="flex items-center gap-1 truncate">
                     <MapPin className="h-3.5 w-3.5" />

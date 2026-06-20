@@ -7,6 +7,7 @@ import { SectionHeading } from "@/components/site/section-heading"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useView } from "@/lib/view-store"
+import { formatDateId } from "@/lib/format"
 
 const categoryColors: Record<string, string> = {
   ORGANISASI: "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400",
@@ -16,10 +17,6 @@ const categoryColors: Record<string, string> = {
   EDUKASI: "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400",
 }
 
-function formatDate(d: Date | string) {
-  return new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
-}
-
 export function NewsSection({ news }: { news: any[] }) {
   const { setView } = useView()
   if (!news || news.length === 0) return null
@@ -27,6 +24,8 @@ export function NewsSection({ news }: { news: any[] }) {
 
   return (
     <section id="berita" className="py-20 bg-slate-50 dark:bg-[#0d1424]">
+      {/* Prevent Next.js next/image runtime error when external thumbnail URL is missing/unconfigured */}
+      {/* next.config.ts adds vercel blob remotePatterns; this is extra safety fallback. */}
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
           <div className="max-w-2xl">
@@ -59,6 +58,10 @@ export function NewsSection({ news }: { news: any[] }) {
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-500"
               sizes="(max-width: 1024px) 100vw, 50vw"
+              onError={(e) => {
+                const img = e.currentTarget
+                if (img) img.src = '/images/hero-rescue.png'
+              }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/60 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -71,7 +74,7 @@ export function NewsSection({ news }: { news: any[] }) {
               <p className="text-sm text-slate-300 line-clamp-2 mb-3">{featured.excerpt}</p>
               <div className="flex items-center gap-4 text-xs text-slate-400">
                 <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{featured.author}</span>
-                <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatDate(featured.publishedAt)}</span>
+                <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatDateId(featured.publishedAt, "long")}</span>
                 <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5" />{featured.views}</span>
               </div>
             </div>
@@ -92,6 +95,10 @@ export function NewsSection({ news }: { news: any[] }) {
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                     sizes="150px"
+                    onError={(e) => {
+                      const img = e.currentTarget
+                      if (img) img.src = '/images/activity-training.png'
+                    }}
                   />
                 </div>
                 <div className="flex-1 min-w-0 py-1">
@@ -103,7 +110,7 @@ export function NewsSection({ news }: { news: any[] }) {
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-1.5">{n.excerpt}</p>
                   <div className="flex items-center gap-3 text-[10px] text-slate-400">
-                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{formatDate(n.publishedAt)}</span>
+                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{formatDateId(n.publishedAt, "long")}</span>
                     <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{n.views}</span>
                   </div>
                 </div>

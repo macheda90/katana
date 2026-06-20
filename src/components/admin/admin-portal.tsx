@@ -30,8 +30,12 @@ const allNavItems = [
   { key: "testimonials", label: "Testimoni", icon: Star },
   { key: "partners", label: "Mitra", icon: Building2 },
   { key: "divisions", label: "Divisi", icon: Layers },
+  { key: "positions", label: "Jabatan", icon: Layers },
+  { key: "pengurus", label: "Pengurus", icon: Users, roles: ['SUPER_ADMIN', 'ADMIN', 'PENGURUS'] },
+
   { key: "settings", label: "Pengaturan", icon: Settings, roles: ['SUPER_ADMIN', 'ADMIN'] },
 ]
+
 
 export function AdminPortal() {
   const { user, showAdmin, setShowAdmin, checkAuth, logout } = useAuth()
@@ -62,7 +66,7 @@ export function AdminPortal() {
           contacts: contacts.length,
           incidents: incidents.length,
         })
-      } catch {}
+      } catch { }
     }
     fetchCounts()
     const interval = setInterval(fetchCounts, 30000)
@@ -216,7 +220,7 @@ export function AdminPortal() {
           ) : effectiveSection === "settings" ? (
             <AdminSettings />
           ) : currentSection ? (
-            <DataManager section={currentSection} sectionKey={effectiveSection} userRole={user.role} />
+            <DataManager key={effectiveSection} section={currentSection} sectionKey={effectiveSection} userRole={user.role} />
           ) : null}
         </main>
       </div>
