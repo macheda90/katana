@@ -89,7 +89,7 @@ export function Navbar() {
             </span>
             <span className="flex items-center gap-1.5">
               <Mail className="h-3 w-3 text-orange-500" />
-              info@katanarescue.cikampek.id
+              info@katanarescue.id
             </span>
           </div>
           <div className="flex items-center gap-3">

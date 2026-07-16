@@ -36,10 +36,10 @@ const defaultValues: Record<SettingKey, string> = {
   hero_cta2_text: "Hubungi Kami",
   hero_cta2_link: "#kontak",
   address: "Jl. Raya Cikampek No. 1, Cikampek, Karawang, Jawa Barat 41373",
-  phone: "+62 812-3456-7890",
-  email: "info@katanarescue.cikampek.id",
-  whatsapp: "+62 812-3456-7890",
-  emergency_hotline: "+62 812-3456-7890",
+  phone: "+62 838-4540-8400",
+  email: "info@katanarescue.id",
+  whatsapp: "+62 838-4540-8400",
+  emergency_hotline: "+62 838-4540-8400",
   instagram: "https://instagram.com/katanarescue",
   facebook: "https://facebook.com/katanarescue",
   youtube: "https://youtube.com/@katanarescue",
@@ -74,7 +74,7 @@ export function AdminSettings() {
         }
         setValues(merged)
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false))
   }, [])
 
