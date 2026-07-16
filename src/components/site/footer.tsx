@@ -19,8 +19,8 @@ const programLinks = [
 ]
 
 export function Footer({ settings }: { settings: Record<string, string> }) {
-  const phone = settings.phone || "+62 812-3456-7890"
-  const email = settings.email || "info@katanarescue.cikampek.id"
+  const phone = settings.phone || "+62 838-4540-8400"
+  const email = settings.email || "info@katanarescue.id"
   const address = settings.address || "Jl. Raya Cikampek No. 1, Cikampek, Karawang, Jawa Barat 41373"
   const footerText = settings.footer_text || "Tim SAR dan relawan kemanusiaan yang berkomitmen..."
   const copyright = settings.footer_copyright || `© ${new Date().getFullYear()} KATANA RESCUE.`

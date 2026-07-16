@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 export function MapSection({ settings }: { settings: Record<string, string> }) {
   const address = settings.address || "Jl. Raya Cikampek No. 1, Cikampek, Karawang, Jawa Barat 41373"
   const phone = settings.phone || "+62 812-3456-7890"
-  const email = settings.email || "info@katanarescue.cikampek.id"
+  const email = settings.email || "info@katanarescue.id"
   const mapsEmbed = settings.maps_embed || "https://www.openstreetmap.org/export/embed.html?bbox=107.4456%2C-6.4317%2C107.4756%2C-6.4117&layer=mapnik&marker=-6.4217%2C107.4606"
   const mapsLat = settings.maps_lat || "-6.4217"
   const mapsLng = settings.maps_lng || "107.4606"

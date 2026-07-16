@@ -13,7 +13,7 @@ import { SectionHeading } from "@/components/site/section-heading"
 export function ContactSection({ settings }: { settings: Record<string, string> }) {
   const [loading, setLoading] = useState(false)
   const phone = settings.phone || "+62 812-3456-7890"
-  const email = settings.email || "info@katanarescue.cikampek.id"
+  const email = settings.email || "info@katanarescue.id"
   const address = settings.address || "Jl. Raya Cikampek No. 1, Cikampek, Karawang, Jawa Barat 41373"
   const whatsapp = settings.whatsapp || phone
 
