@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,6 +20,7 @@ import { Plus, Search, Pencil, Trash2, Loader2, CheckCircle2, XCircle, Upload, F
 import { toast } from "sonner"
 import { canPerformAction } from "@/lib/admin-config"
 import type { SectionConfig, FieldConfig } from "@/lib/admin-config"
+import { formatCurrencyId, formatDateId } from "@/lib/format"
 
 const statusColors: Record<string, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700",
@@ -52,15 +53,11 @@ const statusColors: Record<string, string> = {
 
 function formatDate(d: any) {
   if (!d) return "-"
-  try {
-    return new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
-  } catch {
-    return "-"
-  }
+  return formatDateId(d)
 }
 
 function formatCurrency(n: number) {
-  return "Rp " + (n || 0).toLocaleString("id-ID")
+  return formatCurrencyId(n || 0)
 }
 
 export function DataManager({ section, sectionKey, userRole }: { section: SectionConfig; sectionKey: string; userRole: string }) {
@@ -76,7 +73,7 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
   const canEdit = canPerformAction(section, userRole, 'edit')
   const canDelete = canPerformAction(section, userRole, 'delete')
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -85,27 +82,107 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
       const res = await fetch(`/api/admin/${sectionKey}?${params}`)
       if (res.ok) {
         setRecords(await res.json())
+      } else {
+        const err = await res.json().catch(() => null)
+        setRecords([])
+        toast.error(err?.error || "Gagal memuat data")
       }
     } catch {
+      setRecords([])
       toast.error("Gagal memuat data")
     } finally {
       setLoading(false)
     }
-  }
+  }, [search, sectionKey, statusFilter])
 
   useEffect(() => {
     const timer = setTimeout(fetchData, 300)
     return () => clearTimeout(timer)
-  }, [search, statusFilter])
+  }, [fetchData])
 
   const handleSave = async (data: Record<string, unknown>, id?: string) => {
     try {
       const url = id ? `/api/admin/${sectionKey}/${id}` : `/api/admin/${sectionKey}`
       const method = id ? "PATCH" : "POST"
+
+      // If image/file is File, upload to Vercel Blob first
+      let payload: Record<string, unknown> = { ...data }
+
+      if (sectionKey === 'news' && payload.thumbnail instanceof File) {
+        const fd = new FormData()
+        fd.append('file', payload.thumbnail)
+
+        const prevUrl = payload.thumbnailPreviewUrl
+        if (typeof prevUrl === 'string' && prevUrl) fd.append('prevUrl', prevUrl)
+
+        const upRes = await fetch('/api/admin/upload-news-thumbnail', { method: 'POST', body: fd })
+        const upJson = await upRes.json().catch(() => null)
+        if (!upRes.ok || !upJson?.url) {
+          toast.error(upJson?.error || 'Gagal upload thumbnail')
+          return
+        }
+        payload.thumbnail = upJson.url
+        delete payload.thumbnailPreviewUrl
+      }
+
+      if (sectionKey === 'activities' && payload.image instanceof File) {
+        const fd = new FormData()
+        fd.append('file', payload.image)
+
+        const prevUrl = payload.imagePreviewUrl
+        if (typeof prevUrl === 'string' && prevUrl) fd.append('prevUrl', prevUrl)
+
+        const upRes = await fetch('/api/admin/upload-activity-image', { method: 'POST', body: fd })
+        const upJson = await upRes.json().catch(() => null)
+        if (!upRes.ok || !upJson?.url) {
+          toast.error(upJson?.error || 'Gagal upload gambar')
+          return
+        }
+        payload.image = upJson.url
+        delete payload.imagePreviewUrl
+      }
+
+      if (sectionKey === 'inventory' && payload.image instanceof File) {
+        const fd = new FormData()
+        fd.append('file', payload.image)
+
+        const prevUrl = payload.imagePreviewUrl
+        if (typeof prevUrl === 'string' && prevUrl) fd.append('prevUrl', prevUrl)
+
+        const upRes = await fetch('/api/admin/upload-inventory-image', { method: 'POST', body: fd })
+        const upJson = await upRes.json().catch(() => null)
+        if (!upRes.ok || !upJson?.url) {
+          toast.error(upJson?.error || 'Gagal upload gambar')
+          return
+        }
+        payload.image = upJson.url
+        delete payload.imagePreviewUrl
+      }
+
+      if (sectionKey === 'members' && payload.photo instanceof File) {
+        const fd = new FormData()
+        fd.append('file', payload.photo)
+
+        const prevUrl = payload.photoPreviewUrl
+        if (typeof prevUrl === 'string' && prevUrl) fd.append('prevUrl', prevUrl)
+
+        const upRes = await fetch('/api/admin/upload-member-photo', { method: 'POST', body: fd })
+        const upJson = await upRes.json().catch(() => null)
+        if (!upRes.ok || !upJson?.url) {
+          toast.error(upJson?.error || 'Gagal upload foto anggota')
+          return
+        }
+        payload.photo = upJson.url
+        delete payload.photoPreviewUrl
+      }
+
+
+
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       })
       if (res.ok) {
         toast.success(id ? "Data berhasil diperbarui" : "Data berhasil ditambahkan")
@@ -115,11 +192,16 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
       } else {
         const err = await res.json()
         toast.error(err.error || "Gagal menyimpan")
+        if (res.status === 404) {
+          setEditing(null)
+          fetchData()
+        }
       }
     } catch {
       toast.error("Gagal menyimpan")
     }
   }
+
 
   const handleDelete = async () => {
     if (!deleteId) return
@@ -129,7 +211,9 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
         toast.success("Data berhasil dihapus")
         fetchData()
       } else {
-        toast.error("Gagal menghapus")
+        const err = await res.json().catch(() => null)
+        toast.error(err?.error || "Gagal menghapus")
+        if (res.status === 404) fetchData()
       }
     } catch {
       toast.error("Gagal menghapus")
@@ -148,6 +232,10 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
       if (res.ok) {
         toast.success(msg)
         fetchData()
+      } else {
+        const err = await res.json().catch(() => null)
+        toast.error(err?.error || "Gagal")
+        if (res.status === 404) fetchData()
       }
     } catch {
       toast.error("Gagal")
@@ -229,12 +317,12 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
                   <tr key={record.id} className="hover:bg-orange-50/30 transition-colors">
                     {section.listColumns.map((col) => (
                       <td key={col.key} className="px-4 py-3 text-slate-700 whitespace-nowrap">
-                        {col.key === "photo" ? (
+                        {col.key === "photo" || col.key === "avatar" ? (
                           <div className="h-10 w-10 rounded-full overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center">
-                            {record.photo ? (
+                            {(col.key === "photo" ? record.photo : record.avatar) ? (
                               <img
-                                src={record.photo}
-                                alt={record.fullName || "Foto"}
+                                src={col.key === "photo" ? record.photo : record.avatar}
+                                alt={record.fullName || record.name || "Foto"}
                                 className="h-full w-full object-cover"
                                 onError={(e) => {
                                   const target = e.currentTarget
@@ -243,14 +331,42 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
                                   if (parent && !parent.querySelector(".fallback-initial")) {
                                     const fb = document.createElement("div")
                                     fb.className = "fallback-initial flex h-full w-full items-center justify-center text-sm font-bold text-white bg-gradient-to-br from-orange-500 to-orange-600"
-                                    fb.textContent = (record.fullName || "?").charAt(0)
+                                    fb.textContent = ((record.fullName || record.name || "?") as string).charAt(0)
                                     parent.appendChild(fb)
                                   }
                                 }}
                               />
                             ) : (
                               <span className="flex h-full w-full items-center justify-center text-sm font-bold text-white bg-gradient-to-br from-orange-500 to-orange-600">
-                                {(record.fullName || "?").charAt(0)}
+                                {((record.fullName || record.name || "?") as string).charAt(0)}
+                              </span>
+                            )}
+                          </div>
+                        ) : col.key === "image" ? (
+                          <div className="h-10 w-10 rounded-lg overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center">
+                            {record.image ? (
+                              <img
+                                src={record.image}
+                                alt={record.name || "Gambar"}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <span className="flex h-full w-full items-center justify-center text-sm font-bold text-slate-400 bg-slate-50">
+                                -
+                              </span>
+                            )}
+                          </div>
+                        ) : col.key === "thumbnail" ? (
+                          <div className="h-10 w-10 rounded-lg overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center">
+                            {record.thumbnail ? (
+                              <img
+                                src={record.thumbnail}
+                                alt={record.name || "Thumbnail"}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <span className="flex h-full w-full items-center justify-center text-sm font-bold text-slate-400 bg-slate-50">
+                                -
                               </span>
                             )}
                           </div>
@@ -329,6 +445,7 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
           key={editing?.id || "new"}
           section={section}
           record={editing}
+          sectionKey={sectionKey}
           onClose={() => { setCreating(false); setEditing(null) }}
           onSave={handleSave}
         />
@@ -354,12 +471,13 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
 }
 
 function RecordForm({
-  section, record, onClose, onSave,
+  section, record, sectionKey, onClose, onSave,
 }: {
   section: SectionConfig
   record: any
+  sectionKey: string
   onClose: () => void
-  onSave: (data: Record<string, unknown>, id?: string) => void
+  onSave: (data: Record<string, unknown>, id?: string) => Promise<void>
 }) {
   const [saving, setSaving] = useState(false)
 
@@ -372,18 +490,57 @@ function RecordForm({
           try { val = new Date(val).toISOString().split("T")[0] } catch { val = "" }
         }
         initial[field.name] = val ?? ""
+        // keep original url for delete-after-upload (best-effort)
+        if (field.type === 'file' && typeof val === 'string' && val) {
+          initial[`${field.name}PreviewUrl`] = val
+        }
+
       } else {
         initial[field.name] = field.type === "boolean" ? false : ""
       }
     }
+    if (sectionKey === 'pengurus') {
+      initial['memberIdOptions'] = [] as { value: string; label: string }[]
+      initial['positionIdOptions'] = [] as { value: string; label: string }[]
+    }
     return initial
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    let cancelled = false
+    if (sectionKey !== 'pengurus') return
+
+    const loadOptions = async () => {
+      try {
+        const res = await fetch(`/api/admin/${sectionKey}/options`)
+        if (!res.ok) return
+        const json = await res.json()
+        if (cancelled) return
+
+        setFormData((prev) => ({
+          ...prev,
+          memberIdOptions: json.members || [],
+          positionIdOptions: json.positions || [],
+        }))
+      } catch { }
+    }
+
+    loadOptions()
+    return () => {
+      cancelled = true
+    }
+  }, [sectionKey])
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
-    onSave(formData, record?.id).finally(() => setSaving(false))
+    try {
+      await onSave(formData, record?.id)
+    } finally {
+      setSaving(false)
+    }
   }
+
 
   return (
     <Dialog open onOpenChange={onClose}>
@@ -399,6 +556,11 @@ function RecordForm({
                 field={field}
                 value={formData[field.name]}
                 onChange={(v) => setFormData({ ...formData, [field.name]: v })}
+                selectOptions={
+                  sectionKey === 'pengurus' && (field.name === 'memberId' || field.name === 'positionId')
+                    ? (formData[`${field.name}Options` as const] as { value: string; label: string }[])
+                    : undefined
+                }
               />
             ))}
           </div>
@@ -415,7 +577,17 @@ function RecordForm({
   )
 }
 
-function FieldInput({ field, value, onChange }: { field: FieldConfig; value: unknown; onChange: (v: string) => void }) {
+function FieldInput({
+  field,
+  value,
+  onChange,
+  selectOptions,
+}: {
+  field: FieldConfig
+  value: unknown
+  onChange: (v: string | File) => void
+  selectOptions?: { value: string; label: string }[]
+}) {
   const colSpan = field.full || field.type === "textarea" ? "sm:col-span-2" : ""
 
   return (
@@ -438,7 +610,9 @@ function FieldInput({ field, value, onChange }: { field: FieldConfig; value: unk
         <Select value={(value as string) || ""} onValueChange={onChange}>
           <SelectTrigger className="bg-white border-slate-200 text-sm"><SelectValue placeholder={`Pilih ${field.label}`} /></SelectTrigger>
           <SelectContent>
-            {field.options?.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+            {((selectOptions || field.options || []) as { value: string; label: string }[]).map((o) => (
+              <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       ) : field.type === "boolean" ? (
@@ -482,20 +656,42 @@ function FieldInput({ field, value, onChange }: { field: FieldConfig; value: unk
           )}
         </div>
       ) : field.type === "file" ? (
-        <div className="flex gap-2">
-          <Input
+        <div className="space-y-2">
+          <input
             id={field.name}
-            type="text"
-            value={(value as string) || ""}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={field.placeholder || "URL file"}
-            className="bg-white border-slate-200 text-sm flex-1"
+            type="file"
+            accept="image/*"
+            className="text-sm text-slate-600"
+            onChange={(e) => {
+              const f = e.target.files?.[0]
+              if (!f) return
+              // Upload dilakukan di client-side admin dengan mengubah value menjadi File object
+              // RecordForm/submit akan mengirim file tersebut ke API.
+              onChange(f as any)
+            }}
           />
-          <Button type="button" variant="outline" size="icon" className="shrink-0 border-slate-200" title="Upload File">
-            <FileText className="h-4 w-4 text-slate-400" />
-          </Button>
+          {value ? (
+            <div className="h-24 w-24 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 relative">
+              <img
+                src={typeof value === 'string' ? value : URL.createObjectURL(value as File)}
+                alt={field.label}
+                className="h-full w-full object-cover"
+                onLoad={() => {
+                  if (typeof value !== 'string') {
+                    // no-op; object URL will be GC'd
+                  }
+                }}
+              />
+            </div>
+          ) : (
+            <div className="flex h-24 w-24 items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50">
+              <ImageIcon className="h-8 w-8 text-slate-300" />
+            </div>
+          )}
+
         </div>
       ) : (
+
         <Input
           id={field.name}
           type={field.type === "number" ? "number" : field.type === "date" ? "date" : "text"}

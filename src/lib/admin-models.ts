@@ -15,4 +15,9 @@ export const modelMap: Record<string, any> = {
   testimonials: db.testimonial,
   partners: db.partner,
   divisions: db.division,
+  positions: db.position,
+  positionAssignments: db.positionAssignment,
+  // Alias untuk key section UI
+  pengurus: db.positionAssignment,
 }
+

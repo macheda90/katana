@@ -10,6 +10,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { SectionHeading } from "@/components/site/section-heading"
+import { formatDateId } from "@/lib/format"
 
 const categoryColors: Record<string, string> = {
   RESCUE: "bg-red-100 text-red-700",
@@ -25,10 +26,6 @@ const categoryLabels: Record<string, string> = {
   PELATIHAN: "Pelatihan",
   SIMULASI: "Simulasi",
   BENCANA: "Bencana",
-}
-
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
 }
 
 export function AllActivitiesPage() {
@@ -127,7 +124,7 @@ export function AllActivitiesPage() {
                     <div className="flex items-center gap-3 text-xs text-slate-500 mb-2">
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3.5 w-3.5" />
-                        {formatDate(a.activityDate)}
+                        {formatDateId(a.activityDate, "long")}
                       </span>
                       <span className="flex items-center gap-1 truncate">
                         <MapPin className="h-3.5 w-3.5" />

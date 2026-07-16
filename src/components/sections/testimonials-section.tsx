@@ -27,8 +27,16 @@ export function TestimonialsSection({ testimonials }: { testimonials: any[] }) {
                 &ldquo;{t.message}&rdquo;
               </p>
               <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-white font-bold shrink-0">
-                  {t.name.charAt(0)}
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-600 text-white font-bold shrink-0 overflow-hidden">
+                  {t.avatar ? (
+                    <img
+                      src={t.avatar}
+                      alt={t.name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="h-full w-full flex items-center justify-center">{t.name.charAt(0)}</span>
+                  )}
                 </div>
                 <div>
                   <div className="font-bold text-[#0F172A] dark:text-white text-sm">{t.name}</div>

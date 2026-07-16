@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
         certifications: body.certifications || null,
         photo: body.photo || null,
         ktpPhoto: body.ktpPhoto || null,
-        certPhoto: body.certPhoto || null,
+        certFile: body.certFile || body.certPhoto || null,
         status: 'PENDING',
         divisionId: body.divisionId || null,
       },

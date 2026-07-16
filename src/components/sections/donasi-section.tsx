@@ -8,11 +8,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Banknote, Wallet, Send, TrendingUp, Users } from "lucide-react"
+import { formatCurrencyId } from "@/lib/format"
 
 const quickAmounts = [50000, 100000, 250000, 500000, 1000000, 5000000]
 
 function formatRupiah(n: number) {
-  return "Rp " + n.toLocaleString("id-ID")
+  return formatCurrencyId(n)
 }
 
 export function DonasiSection() {

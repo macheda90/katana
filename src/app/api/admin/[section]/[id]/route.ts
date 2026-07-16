@@ -3,6 +3,10 @@ import { getSessionUser, ADMIN_ROLES } from '@/lib/auth'
 import { adminSections, canAccessSection, canPerformAction } from '@/lib/admin-config'
 import { modelMap } from '@/lib/admin-models'
 
+function isRecordNotFoundError(error: unknown) {
+  return typeof error === 'object' && error !== null && 'code' in error && error.code === 'P2025'
+}
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ section: string; id: string }> }
@@ -36,24 +40,34 @@ export async function PATCH(
     }
   }
 
-  // Log audit
   try {
-    await (await import('@/lib/db')).db.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'UPDATE',
-        entity: section,
-        entityId: id,
-        details: `Updated ${config.singular}`,
-        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || null,
-      },
-    })
-  } catch {}
+    const existing = await model.findUnique({ where: { id }, select: { id: true } })
+    if (!existing) {
+      return NextResponse.json({ error: 'Data tidak ditemukan atau sudah dihapus' }, { status: 404 })
+    }
 
-  try {
     const record = await model.update({ where: { id }, data })
+
+    // Log audit after the update succeeds.
+    try {
+      await (await import('@/lib/db')).db.auditLog.create({
+        data: {
+          userId: user.id,
+          action: 'UPDATE',
+          entity: section,
+          entityId: id,
+          details: `Updated ${config.singular}`,
+          ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || null,
+        },
+      })
+    } catch {}
+
     return NextResponse.json(record)
   } catch (error: any) {
+    if (isRecordNotFoundError(error)) {
+      return NextResponse.json({ error: 'Data tidak ditemukan atau sudah dihapus' }, { status: 404 })
+    }
+
     console.error('Update error:', error)
     return NextResponse.json({ error: error.message || 'Failed to update' }, { status: 500 })
   }
@@ -76,24 +90,34 @@ export async function DELETE(
     return NextResponse.json({ error: 'Anda tidak memiliki izin untuk menghapus data di section ini' }, { status: 403 })
   }
 
-  // Log audit
   try {
-    await (await import('@/lib/db')).db.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'DELETE',
-        entity: section,
-        entityId: id,
-        details: `Deleted ${config.singular}`,
-        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || null,
-      },
-    })
-  } catch {}
+    const existing = await model.findUnique({ where: { id }, select: { id: true } })
+    if (!existing) {
+      return NextResponse.json({ error: 'Data tidak ditemukan atau sudah dihapus' }, { status: 404 })
+    }
 
-  try {
     await model.delete({ where: { id } })
+
+    // Log audit after the delete succeeds.
+    try {
+      await (await import('@/lib/db')).db.auditLog.create({
+        data: {
+          userId: user.id,
+          action: 'DELETE',
+          entity: section,
+          entityId: id,
+          details: `Deleted ${config.singular}`,
+          ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || null,
+        },
+      })
+    } catch {}
+
     return NextResponse.json({ success: true })
   } catch (error: any) {
+    if (isRecordNotFoundError(error)) {
+      return NextResponse.json({ error: 'Data tidak ditemukan atau sudah dihapus' }, { status: 404 })
+    }
+
     console.error('Delete error:', error)
     return NextResponse.json({ error: error.message || 'Failed to delete' }, { status: 500 })
   }

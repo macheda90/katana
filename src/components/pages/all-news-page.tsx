@@ -12,6 +12,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog"
+import { formatDateId } from "@/lib/format"
 
 const categoryColors: Record<string, string> = {
   ORGANISASI: "bg-blue-100 text-blue-700",
@@ -19,10 +20,6 @@ const categoryColors: Record<string, string> = {
   NASIONAL: "bg-purple-100 text-purple-700",
   DAERAH: "bg-emerald-100 text-emerald-700",
   EDUKASI: "bg-amber-100 text-amber-700",
-}
-
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
 }
 
 export function AllNewsPage() {
@@ -125,7 +122,7 @@ export function AllNewsPage() {
                     <p className="text-sm text-slate-300 line-clamp-2 mb-4 max-w-3xl">{featured.excerpt}</p>
                     <div className="flex items-center gap-4 text-xs text-slate-400">
                       <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{featured.author}</span>
-                      <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatDate(featured.publishedAt)}</span>
+                      <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatDateId(featured.publishedAt, "long")}</span>
                       <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5" />{featured.views} views</span>
                     </div>
                   </div>
@@ -160,7 +157,7 @@ export function AllNewsPage() {
                       </h3>
                       <p className="text-sm text-slate-500 line-clamp-2 mb-3">{n.excerpt}</p>
                       <div className="flex items-center gap-3 text-xs text-slate-400">
-                        <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{formatDate(n.publishedAt)}</span>
+                        <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{formatDateId(n.publishedAt, "long")}</span>
                         <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{n.views}</span>
                       </div>
                     </div>
@@ -179,7 +176,7 @@ export function AllNewsPage() {
             <DialogHeader>
               <div className="flex items-center gap-2 mb-2">
                 <Badge className={`${categoryColors[selected.category]} border-0`}>{selected.category}</Badge>
-                <span className="text-xs text-slate-500 flex items-center gap-1"><Calendar className="h-3 w-3" />{formatDate(selected.publishedAt)}</span>
+                <span className="text-xs text-slate-500 flex items-center gap-1"><Calendar className="h-3 w-3" />{formatDateId(selected.publishedAt, "long")}</span>
               </div>
               <DialogTitle className="text-xl text-[#0F172A]">{selected.title}</DialogTitle>
             </DialogHeader>

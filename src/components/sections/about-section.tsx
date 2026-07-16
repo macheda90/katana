@@ -6,12 +6,12 @@ export function AboutSection({ settings }: { settings: Record<string, string> })
   const misi = (settings.about_misi || "Memberikan pelayanan pencarian, pertolongan, dan evakuasi yang cepat, tepat, dan profesional.|Meningkatkan kapasitas anggota melalui pelatihan dan sertifikasi berkala|Membangun kemitraan strategis dengan pemerintah dan instansi terkait|Melaksanakan program kesiapsiagaan bencana dan edukasi masyarakat|Mengedepankan nilai kemanusiaan, profesionalisme, dan kepedulian sosial").split("|")
   const history = settings.about_history || "Katana Rescue didirikan pada tahun 2018 oleh sekelompok relawan muda di Kecamatan Cikampek yang memiliki kepedulian tinggi terhadap keselamatan masyarakat. Bermula dari kegiatan pencarian dan pertolongan korban banjir musiman, organisasi terus berkembang."
 
-const nilai = [
-  { icon: Heart, title: "Kemanusiaan", desc: "Mengutamakan keselamatan dan kesejahteraan sesama." },
-  { icon: Award, title: "Profesionalisme", desc: "Bekerja dengan kompetensi dan standar tertinggi." },
-  { icon: ShieldCheck, title: "Integritas", desc: "Jujur, amanah, dan bertanggung jawab." },
-  { icon: Users2, title: "Kerja Sama", desc: "Kolaborasi tim dan mitra dalam setiap tugas." },
-]
+  const nilai = [
+    { icon: Heart, title: "Kemanusiaan", desc: "Mengutamakan keselamatan dan kesejahteraan sesama." },
+    { icon: Award, title: "Profesionalisme", desc: "Bekerja dengan kompetensi dan standar tertinggi." },
+    { icon: ShieldCheck, title: "Integritas", desc: "Jujur, amanah, dan bertanggung jawab." },
+    { icon: Users2, title: "Kerja Sama", desc: "Kolaborasi tim dan mitra dalam setiap tugas." },
+  ]
 
   return (
     <section id="about" className="py-20 bg-white dark:bg-[#0a0f1d]">
@@ -19,7 +19,7 @@ const nilai = [
         <SectionHeading
           eyebrow="Tentang Kami"
           title="Mengenal Katana Rescue Lebih Dekat"
-          description="Organisasi SAR dan relawan kemanusiaan yang berdedikasi melayani masyarakat Kecamatan Cikampek sejak tahun 2018."
+          description="Organisasi SAR dan relawan kemanusiaan yang berdedikasi melayani masyarakat Kabupaten Karawang sejak tahun 2020."
         />
 
         {/* Sejarah */}
@@ -33,7 +33,7 @@ const nilai = [
               />
             </div>
             <div className="absolute -bottom-6 -right-6 bg-orange-500 text-white rounded-2xl p-6 shadow-xl hidden md:block">
-              <div className="text-4xl font-extrabold">7+</div>
+              <div className="text-4xl font-extrabold">5+</div>
               <div className="text-sm font-medium">Tahun Mengabdi</div>
             </div>
           </div>

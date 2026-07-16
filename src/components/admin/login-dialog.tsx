@@ -119,7 +119,7 @@ export function LoginDialog({
             </div>
           )}
 
-          <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+          {/* <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
             <p className="text-xs text-slate-500 font-semibold mb-1">Demo Credentials:</p>
             <p className="text-xs text-slate-600 dark:text-slate-300">
               Email: <code className="text-orange-600">admin@katanarescue.cikampek.id</code>
@@ -127,7 +127,7 @@ export function LoginDialog({
             <p className="text-xs text-slate-600 dark:text-slate-300">
               Password: <code className="text-orange-600">admin123</code>
             </p>
-          </div>
+          </div> */}
 
           <Button type="submit" disabled={loading} className="w-full bg-orange-500 hover:bg-orange-600 text-white h-11">
             {loading ? (

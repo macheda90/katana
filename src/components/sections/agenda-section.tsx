@@ -3,20 +3,13 @@ import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react"
 import { SectionHeading } from "@/components/site/section-heading"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { formatTimeId } from "@/lib/format"
 
 const categoryConfig: Record<string, { label: string; color: string }> = {
   PELATIHAN: { label: "Pelatihan SAR", color: "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400" },
   SIMULASI: { label: "Simulasi Bencana", color: "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400" },
   BAKTI_SOSIAL: { label: "Bakti Sosial", color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400" },
   RAPAT: { label: "Rapat Organisasi", color: "bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400" },
-}
-
-function formatDate(d: Date | string) {
-  return new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
-}
-
-function formatTime(d: Date | string) {
-  return new Date(d).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })
 }
 
 export function AgendaSection({ agenda }: { agenda: any[] }) {
@@ -47,6 +40,7 @@ export function AgendaSection({ agenda }: { agenda: any[] }) {
           {agenda.slice(0, 6).map((a) => {
             const cat = categoryConfig[a.category] || { label: a.category, color: "bg-slate-100 text-slate-700" }
             const d = new Date(a.startDate)
+            const month = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"][d.getUTCMonth()]
             return (
               <div
                 key={a.id}
@@ -55,11 +49,11 @@ export function AgendaSection({ agenda }: { agenda: any[] }) {
                 {/* Date block */}
                 <div className="shrink-0 w-16 text-center">
                   <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-t-xl py-1.5 px-2">
-                    <div className="text-[10px] font-bold uppercase">{d.toLocaleDateString("id-ID", { month: "short" })}</div>
+                    <div className="text-[10px] font-bold uppercase">{month}</div>
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-800 rounded-b-xl py-2 border-x border-b border-slate-100 dark:border-slate-700">
-                    <div className="text-2xl font-extrabold text-[#0F172A] dark:text-white leading-none">{d.getDate()}</div>
-                    <div className="text-[10px] text-slate-500 mt-0.5">{d.getFullYear()}</div>
+                    <div className="text-2xl font-extrabold text-[#0F172A] dark:text-white leading-none">{d.getUTCDate()}</div>
+                    <div className="text-[10px] text-slate-500 mt-0.5">{d.getUTCFullYear()}</div>
                   </div>
                 </div>
 
@@ -72,7 +66,7 @@ export function AgendaSection({ agenda }: { agenda: any[] }) {
                   <div className="space-y-1 text-xs text-slate-500 dark:text-slate-400">
                     <div className="flex items-center gap-1.5">
                       <Clock className="h-3 w-3" />
-                      {formatTime(a.startDate)} WIB
+                      {formatTimeId(a.startDate)} WIB
                     </div>
                     <div className="flex items-center gap-1.5">
                       <MapPin className="h-3 w-3" />

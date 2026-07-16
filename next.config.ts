@@ -29,8 +29,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "randomuser.me",
       },
+      {
+        // Vercel Blob public URLs: https://<bucket>.public.blob.vercel-storage.com/<key>
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+      },
     ],
   },
 };
+
 
 export default nextConfig;

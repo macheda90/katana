@@ -46,31 +46,92 @@ export default async function HomePage() {
     getStats(),
     db.division.findMany({
       orderBy: { order: "asc" },
-      include: { _count: { select: { members: { where: { status: "ACTIVE" } } } } },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        icon: true,
+        color: true,
+        coordinator: true,
+        order: true,
+        _count: { select: { members: { where: { status: "ACTIVE" } } } },
+      },
     }),
     db.activity.findMany({
       orderBy: { activityDate: "desc" },
       take: 6,
-      include: { division: { select: { name: true, icon: true, color: true } } },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        category: true,
+        description: true,
+        location: true,
+        activityDate: true,
+        image: true,
+        division: { select: { name: true, icon: true, color: true } },
+      },
     }),
     db.news.findMany({
       where: { published: true },
       orderBy: { publishedAt: "desc" },
       take: 5,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        category: true,
+        excerpt: true,
+        thumbnail: true,
+        author: true,
+        views: true,
+        publishedAt: true,
+      },
     }),
     db.agenda.findMany({
       where: { status: "UPCOMING" },
       orderBy: { startDate: "asc" },
       take: 6,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        category: true,
+        location: true,
+        startDate: true,
+        endDate: true,
+        status: true,
+      },
     }),
-    db.testimonial.findMany({ orderBy: { order: "asc" } }),
-    db.partner.findMany({ orderBy: { order: "asc" } }),
+    db.testimonial.findMany({
+      orderBy: { order: "asc" },
+      select: { id: true, name: true, role: true, org: true, message: true, rating: true, avatar: true },
+    }),
+    db.partner.findMany({
+      orderBy: { order: "asc" },
+      select: { id: true, name: true, type: true },
+    }),
     getSiteSettings(),
     db.member.findMany({
       where: { status: "ACTIVE" },
       select: { id: true, fullName: true, memberNumber: true, photo: true, bio: true, occupation: true, divisionId: true, status: true },
     }),
   ])
+
+  const safeActivities = activities.map((activity) => ({
+    ...activity,
+    activityDate: activity.activityDate.toISOString(),
+  }))
+  const safeNews = news.map((item) => ({
+    ...item,
+    publishedAt: item.publishedAt.toISOString(),
+  }))
+  const safeAgenda = agenda.map((item) => ({
+    ...item,
+    startDate: item.startDate.toISOString(),
+    endDate: item.endDate?.toISOString() ?? null,
+  }))
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-[#0a0f1d]">
@@ -81,9 +142,9 @@ export default async function HomePage() {
           <StatsSection stats={stats} />
           <AboutSection settings={settings} />
           <DivisionsSection divisions={divisions} />
-          <ActivitiesSection activities={activities} />
-          <NewsSection news={news} />
-          <AgendaSection agenda={agenda} />
+          <ActivitiesSection activities={safeActivities} />
+          <NewsSection news={safeNews} />
+          <AgendaSection agenda={safeAgenda} />
           <StrukturSection />
           <DisasterSection />
           <EdukasiSection />

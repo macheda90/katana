@@ -3,31 +3,32 @@
 
 generator client {
   provider = "prisma-client-js"
+
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 // ============ AUTH & USERS ============
 
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  passwordHash  String
-  name          String
-  role          String   @default("ANGGOTA") // SUPER_ADMIN, ADMIN, PENGURUS, KOORDINATOR_DIVISI, ANGGOTA, RELAWAN
-  avatar        String?
-  memberId      String?  @unique
-  isActive      Boolean  @default(true)
-  lastLoginAt   DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         String    @default("ANGGOTA") // SUPER_ADMIN, ADMIN, PENGURUS, KOORDINATOR_DIVISI, ANGGOTA, RELAWAN
+  avatar       String?
+  memberId     String?   @unique
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  member        Member?
-  auditLogs     AuditLog[]
-  loginHistory  LoginHistory[]
+  member       Member?
+  auditLogs    AuditLog[]
+  loginHistory LoginHistory[]
 
   @@index([role])
 }
@@ -40,7 +41,7 @@ model LoginHistory {
   success   Boolean  @default(true)
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -51,11 +52,11 @@ model AuditLog {
   action    String
   entity    String?
   entityId  String?
-  details   String?
+  details   String?  @db.Text
   ip        String?
   createdAt DateTime @default(now())
 
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([entity])
@@ -67,60 +68,90 @@ model Division {
   id          String   @id @default(cuid())
   name        String
   slug        String   @unique
-  description String?
+  description String?  @db.Text
   icon        String?
-  color       String?  // tailwind color hint
+  color       String? // tailwind color hint
   coordinator String?
   order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  members     Member[]
-  activities  Activity[]
+  members    Member[]
+  activities Activity[]
 
   @@index([slug])
 }
 
+// ============ ORG STRUCTURE ============
+model Position {
+  id        String   @id @default(cuid())
+  title     String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignments PositionAssignment[]
+
+  @@index([order])
+}
+
+model PositionAssignment {
+  id         String    @id @default(cuid())
+  positionId String
+  memberId   String
+  isActive   Boolean   @default(true)
+  startedAt  DateTime  @default(now())
+  endedAt    DateTime?
+
+  position Position @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  member   Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([positionId, memberId])
+  @@index([positionId])
+  @@index([memberId])
+}
+
 model Member {
-  id              String   @id @default(cuid())
-  memberNumber    String   @unique
-  nik             String?
-  fullName        String
-  birthPlace      String?
-  birthDate       DateTime?
-  gender          String?  // LAKI_LAKI, PEREMPUAN
-  address         String?
-  village         String?  // Desa
-  district        String?  // Kecamatan
-  regency         String?  // Kabupaten
-  province        String?
+  id           String    @id @default(cuid())
+  memberNumber String    @unique
+  nik          String?
+  fullName     String
+  birthPlace   String?
+  birthDate    DateTime?
+  gender       String? // LAKI_LAKI, PEREMPUAN
+  address      String?   @db.Text
+  village      String? // Desa
+  district     String? // Kecamatan
+  regency      String? // Kabupaten
+  province     String?
 
-  phone           String?
-  whatsapp        String?
-  email           String?
+  phone    String?
+  whatsapp String?
+  email    String?
 
-  education       String?
-  occupation      String?
-  skills          String?  // comma separated
-  certifications  String?
-  bio             String?
+  education      String?
+  occupation     String?
+  skills         String? @db.Text // comma separated
+  certifications String? @db.Text
+  bio            String? @db.Text
 
-  photo           String?
-  ktpPhoto        String?
-  certFile        String?
+  photo    String? @db.Text
+  ktpPhoto String? @db.Text
+  certFile String? @db.Text
 
-  status          String   @default("PENDING") // PENDING, ACTIVE, INACTIVE, REJECTED
-  joinDate        DateTime?
-  userId          String?  @unique
-  divisionId      String?
+  status     String    @default("PENDING") // PENDING, ACTIVE, INACTIVE, REJECTED
+  joinDate   DateTime?
+  userId     String?   @unique
+  divisionId String?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  division        Division? @relation(fields: [divisionId], references: [id], onDelete: SetNull)
-  activityMembers ActivityMember[]
-  missionMembers  MissionMember[]
+  user                User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  division            Division?            @relation(fields: [divisionId], references: [id], onDelete: SetNull)
+  activityMembers     ActivityMember[]
+  missionMembers      MissionMember[]
+  positionAssignments PositionAssignment[]
 
   @@index([status])
   @@index([divisionId])
@@ -129,21 +160,21 @@ model Member {
 // ============ CONTENT ============
 
 model Activity {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  category    String   // RESCUE, SOSIAL, PELATIHAN, SIMULASI, BENCANA
-  description String?
-  content     String?
-  location    String?
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  category     String // RESCUE, SOSIAL, PELATIHAN, SIMULASI, BENCANA
+  description  String?  @db.Text
+  content      String?  @db.Text
+  location     String?
   activityDate DateTime
-  image       String?
-  divisionId  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  image        String?  @db.Text
+  divisionId   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  division    Division? @relation(fields: [divisionId], references: [id], onDelete: SetNull)
-  members     ActivityMember[]
+  division Division?        @relation(fields: [divisionId], references: [id], onDelete: SetNull)
+  members  ActivityMember[]
 
   @@index([category])
   @@index([slug])
@@ -153,11 +184,11 @@ model ActivityMember {
   id         String   @id @default(cuid())
   activityId String
   memberId   String
-  role       String?  // KOORDINATOR, PERSONEL
+  role       String? // KOORDINATOR, PERSONEL
   createdAt  DateTime @default(now())
 
-  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  member     Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  member   Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
   @@unique([activityId, memberId])
 }
@@ -166,10 +197,10 @@ model News {
   id          String   @id @default(cuid())
   title       String
   slug        String   @unique
-  category    String   // ORGANISASI, BENCANA, NASIONAL, DAERAH, EDUKASI
-  excerpt     String?
-  content     String?
-  thumbnail   String?
+  category    String // ORGANISASI, BENCANA, NASIONAL, DAERAH, EDUKASI
+  excerpt     String?  @db.Text
+  content     String?  @db.Text
+  thumbnail   String?  @db.Text
   author      String?
   published   Boolean  @default(true)
   featured    Boolean  @default(false)
@@ -184,17 +215,17 @@ model News {
 }
 
 model Agenda {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
-  slug        String   @unique
-  category    String   // PELATIHAN, SIMULASI, BAKTI_SOSIAL, RAPAT
-  description String?
+  slug        String    @unique
+  category    String // PELATIHAN, SIMULASI, BAKTI_SOSIAL, RAPAT
+  description String?   @db.Text
   location    String?
   startDate   DateTime
   endDate     DateTime?
-  status      String   @default("UPCOMING") // UPCOMING, ONGOING, DONE, CANCELLED
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  status      String    @default("UPCOMING") // UPCOMING, ONGOING, DONE, CANCELLED
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([category])
   @@index([status])
@@ -205,9 +236,9 @@ model Testimonial {
   name      String
   role      String?
   org       String?
-  message   String
+  message   String   @db.Text
   rating    Int      @default(5)
-  avatar    String?
+  avatar    String?  @db.Text
   order     Int      @default(0)
   createdAt DateTime @default(now())
 }
@@ -215,9 +246,9 @@ model Testimonial {
 model Partner {
   id        String   @id @default(cuid())
   name      String
-  logo      String?
-  type      String?  // BPBD, PMI, BASARNAS, TNI, POLRI, PEMERINTAH
-  website   String?
+  logo      String?  @db.Text
+  type      String? // BPBD, PMI, BASARNAS, TNI, POLRI, PEMERINTAH
+  website   String?  @db.Text
   order     Int      @default(0)
   createdAt DateTime @default(now())
 }
@@ -225,34 +256,34 @@ model Partner {
 // ============ SAR OPERATIONS ============
 
 model Mission {
-  id           String   @id @default(cuid())
-  name         String
-  type         String   // PENCARIAN, EVAKUASI, BENCANA, MEDIS
-  location     String?
-  status       String   @default("SIAGA") // SIAGA, BERJALAN, SELESAI, DIBATALKAN
-  coordinator  String?
-  startDate    DateTime @default(now())
-  endDate      DateTime?
-  description  String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String    @id @default(cuid())
+  name        String
+  type        String // PENCARIAN, EVAKUASI, BENCANA, MEDIS
+  location    String?
+  status      String    @default("SIAGA") // SIAGA, BERJALAN, SELESAI, DIBATALKAN
+  coordinator String?
+  startDate   DateTime  @default(now())
+  endDate     DateTime?
+  description String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  members      MissionMember[]
-  logs         OperationLog[]
+  members MissionMember[]
+  logs    OperationLog[]
 
   @@index([status])
   @@index([type])
 }
 
 model MissionMember {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   missionId String
   memberId  String
-  role      String?  // KOORDINATOR, PERSONEL, MEDIS
-  status    String   @default("SIAGA") // SIAGA, BERTUGAS, TIDAK_AKTIF
+  role      String? // KOORDINATOR, PERSONEL, MEDIS
+  status    String  @default("SIAGA") // SIAGA, BERTUGAS, TIDAK_AKTIF
 
-  mission   Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
-  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  member  Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
   @@unique([missionId, memberId])
 }
@@ -260,25 +291,25 @@ model MissionMember {
 model OperationLog {
   id        String   @id @default(cuid())
   missionId String
-  note      String
+  note      String   @db.Text
   author    String?
   createdAt DateTime @default(now())
 
-  mission   Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
 
   @@index([missionId])
 }
 
 model IncidentReport {
-  id          String   @id @default(cuid())
-  type        String   // ORANG_HILANG, BANJIR, KEBAKARAN, KECELAKAAN, LAINNYA
-  reporterName String?
+  id            String   @id @default(cuid())
+  type          String // ORANG_HILANG, BANJIR, KEBAKARAN, KECELAKAAN, LAINNYA
+  reporterName  String?
   reporterPhone String?
-  location    String?
-  description String?
-  status      String   @default("BARU") // BARU, DITINJAU, DITINDAKLANJUTI, SELESAI
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  location      String?
+  description   String?  @db.Text
+  status        String   @default("BARU") // BARU, DITINJAU, DITINDAKLANJUTI, SELESAI
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([status])
   @@index([type])
@@ -287,47 +318,48 @@ model IncidentReport {
 model Inventory {
   id        String   @id @default(cuid())
   name      String
-  category  String   // PERAHU, TANDU, HT, DRONE, APD, KENDARAAN
+  category  String // PERAHU, TANDU, HT, DRONE, APD, KENDARAAN
   serial    String?
   condition String   @default("BAIK") // BAIK, RUSAK_RINGAN, RUSAK_BERAT
   quantity  Int      @default(1)
   available Int      @default(1)
   location  String?
+  image     String?  @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  loans     Loan[]
+  loans Loan[]
 
   @@index([category])
 }
 
 model Loan {
-  id          String   @id @default(cuid())
-  inventoryId String
+  id           String    @id @default(cuid())
+  inventoryId  String
   borrowerName String
-  borrowerId  String?
-  purpose     String?
-  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED, RETURNED
-  requestDate DateTime @default(now())
-  dueDate     DateTime?
-  returnDate  DateTime?
-  approver    String?
-  notes       String?
+  borrowerId   String?
+  purpose      String?
+  status       String    @default("PENDING") // PENDING, APPROVED, REJECTED, RETURNED
+  requestDate  DateTime  @default(now())
+  dueDate      DateTime?
+  returnDate   DateTime?
+  approver     String?
+  notes        String?
 
-  inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  inventory Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
 
   @@index([status])
 }
 
 model DisasterData {
   id        String   @id @default(cuid())
-  type      String   // BANJIR, LONGSOR, ANGIN_KENCANG, KEBAKARAN
+  type      String // BANJIR, LONGSOR, ANGIN_KENCANG, KEBAKARAN
   location  String?
   date      DateTime @default(now())
   severity  String   @default("SEDANG") // RINGAN, SEDANG, BERAT
   affected  Int      @default(0)
   status    String   @default("AKTIF") // AKTIF, TERKENDALI, SELESAI
-  notes     String?
+  notes     String?  @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -338,14 +370,14 @@ model DisasterData {
 // ============ ENGAGEMENT ============
 
 model Donation {
-  id        String   @id @default(cuid())
-  donorName String
+  id         String   @id @default(cuid())
+  donorName  String
   donorEmail String?
-  amount    Int
-  message   String?
-  method    String   @default("TRANSFER") // TRANSFER, EWALLET, CASH
-  status    String   @default("PENDING") // PENDING, VERIFIED, FAILED
-  createdAt DateTime @default(now())
+  amount     Int
+  message    String?  @db.Text
+  method     String   @default("TRANSFER") // TRANSFER, EWALLET, CASH
+  status     String   @default("PENDING") // PENDING, VERIFIED, FAILED
+  createdAt  DateTime @default(now())
 
   @@index([status])
 }
@@ -356,7 +388,7 @@ model ContactMessage {
   email     String
   phone     String?
   subject   String
-  message   String
+  message   String   @db.Text
   status    String   @default("BARU") // BARU, DIBACA, DIBALAS
   createdAt DateTime @default(now())
 
@@ -366,6 +398,6 @@ model ContactMessage {
 model SiteSetting {
   id        String   @id @default(cuid())
   key       String   @unique
-  value     String
+  value     String   @db.Text
   updatedAt DateTime @updatedAt
 }

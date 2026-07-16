@@ -30,6 +30,8 @@ async function main() {
   await prisma.inventory.deleteMany()
   await prisma.incidentReport.deleteMany()
   await prisma.operationLog.deleteMany()
+  await prisma.positionAssignment.deleteMany()
+  await prisma.position.deleteMany()
   await prisma.missionMember.deleteMany()
   await prisma.mission.deleteMany()
   await prisma.activityMember.deleteMany()
@@ -44,6 +46,7 @@ async function main() {
   await prisma.auditLog.deleteMany()
   await prisma.user.deleteMany()
   await prisma.siteSetting.deleteMany()
+
 
   console.log('✅ Semua data dibersihkan!')
 
@@ -75,6 +78,24 @@ async function main() {
   const divisionMap: Record<string, any> = {}
   for (const d of divisions) {
     divisionMap[d.slug] = await prisma.division.create({ data: d })
+  }
+
+  // ============ POSISI / JABATAN ============
+  const positionData = [
+    { title: 'Ketua Umum', order: 1 },
+    { title: 'Wakil Ketua', order: 2 },
+    { title: 'Sekretaris', order: 3 },
+    { title: 'Bendahara', order: 4 },
+    { title: 'Penasihat', order: 5 },
+    { title: 'Koordinator Operasional', order: 6 },
+    { title: 'Koordinator Keuangan', order: 7 },
+    { title: 'Koordinator Dokumentasi & Humas', order: 8 },
+  ]
+
+  const positionMap: Record<string, any> = {}
+  for (const p of positionData) {
+    const created = await prisma.position.create({ data: p })
+    positionMap[p.title] = created
   }
 
   // ============ ANGGOTA (realistic) ============
@@ -284,12 +305,12 @@ async function main() {
 
   // ============ TESTIMONI ============
   const testimonials = [
-    { name: 'H. Sukirno', role: 'Kepala Desa Dawuan', org: 'Desa Dawuan', message: 'Katana Rescue sangat membantu saat banjir tahun lalu. Evakuasi cepat dan profesional. Tim datang dalam 30 menit setelah kami hubungi. Terima kasih atas dedikasinya.', rating: 5, order: 1 },
-    { name: 'Drs. Ahmad Fauzi, M.Si', role: 'Camat', org: 'Kecamatan Cikampek', message: 'Kemitraan dengan Katana Rescue memperkuat sistem penanggulangan bencana di wilayah kita. Sangat tanggap, terkoordinasi, dan profesional. Harvest bagi pemerintah kecamatan.', rating: 5, order: 2 },
-    { name: 'Sri Mulyani', role: 'Warga Terdampak', org: 'Cikampek Selatan', message: 'Saya dan 3 anak saya dievakuasi tim Katana Rescue saat rumah kami kebanjiran malam hari. Mereka sabar, cepat, dan sangat membantu. Semoga berbalas budi.', rating: 5, order: 3 },
-    { name: 'dr. Bayu Anggara', role: 'Dokter', org: 'Puskesmas Cikampek 1', message: 'Kerjasama dalam bakti sosial pengobatan gratis berjalan lancar. Tim Katana Rescue sangat terorganisir dan membantu penanganan pasien. Lanjutkan kemitraan.', rating: 5, order: 4 },
-    { name: 'Budi Santoso, S.Pd', role: 'Kepala Sekolah', org: 'SDN Cikampek 03', message: 'Simulasi tanggap bencana sangat edukatif untuk siswa. Anak-anak jadi paham cara evakuasi yang benar saat gempa. Terima kasih Katana Rescue.', rating: 5, order: 5 },
-    { name: 'Ir. Hendra Wijaya', role: 'Kepala BPBD', org: 'Badan Penanggulangan Bencana Daerah Karawang', message: 'Katana Rescue adalah mitra strategis dalam penanganan bencana di Kabupaten Karawang. Profesional, siaga 24 jam, dan selalu siap membantu. Apresiasi setinggi-tingginya.', rating: 5, order: 6 },
+    { name: 'H. Sukirno', role: 'Kepala Desa Dawuan', org: 'Desa Dawuan', avatar: 'https://i.pravatar.cc/300?img=12', message: 'Katana Rescue sangat membantu saat banjir tahun lalu. Evakuasi cepat dan profesional. Tim datang dalam 30 menit setelah kami hubungi. Terima kasih atas dedikasinya.', rating: 5, order: 1 },
+    { name: 'Drs. Ahmad Fauzi, M.Si', role: 'Camat', org: 'Kecamatan Cikampek', avatar: 'https://i.pravatar.cc/300?img=15', message: 'Kemitraan dengan Katana Rescue memperkuat sistem penanggulangan bencana di wilayah kita. Sangat tanggap, terkoordinasi, dan profesional. Harvest bagi pemerintah kecamatan.', rating: 5, order: 2 },
+    { name: 'Sri Mulyani', role: 'Warga Terdampak', org: 'Cikampek Selatan', avatar: 'https://i.pravatar.cc/300?img=32', message: 'Saya dan 3 anak saya dievakuasi tim Katana Rescue saat rumah kami kebanjiran malam hari. Mereka sabar, cepat, dan sangat membantu. Semoga berbalas budi.', rating: 5, order: 3 },
+    { name: 'dr. Bayu Anggara', role: 'Dokter', org: 'Puskesmas Cikampek 1', avatar: 'https://i.pravatar.cc/300?img=18', message: 'Kerjasama dalam bakti sosial pengobatan gratis berjalan lancar. Tim Katana Rescue sangat terorganisir dan membantu penanganan pasien. Lanjutkan kemitraan.', rating: 5, order: 4 },
+    { name: 'Budi Santoso, S.Pd', role: 'Kepala Sekolah', org: 'SDN Cikampek 03', avatar: 'https://i.pravatar.cc/300?img=56', message: 'Simulasi tanggap bencana sangat edukatif untuk siswa. Anak-anak jadi paham cara evakuasi yang benar saat gempa. Terima kasih Katana Rescue.', rating: 5, order: 5 },
+    { name: 'Ir. Hendra Wijaya', role: 'Kepala BPBD', org: 'Badan Penanggulangan Bencana Daerah Karawang', avatar: 'https://i.pravatar.cc/300?img=60', message: 'Katana Rescue adalah mitra strategis dalam penanganan bencana di Kabupaten Karawang. Profesional, siaga 24 jam, dan selalu siap membantu. Apresiasi setinggi-tingginya.', rating: 5, order: 6 },
   ]
 
   for (const t of testimonials) {
@@ -312,7 +333,35 @@ async function main() {
     await prisma.partner.create({ data: p })
   }
 
-  // ============ MISI SAR ============
+  // ============ POSISI ASSIGNMENTS (jabatan ke member aktif) ============
+  // Map yang dipakai untuk sample seed
+  const assign = async (title: string, memberName: string, ended: boolean = false) => {
+    const pos = positionMap[title]
+    if (!pos) return
+    const mem = members.find((m) => m.fullName === memberName)
+    if (!mem) return
+
+    await prisma.positionAssignment.create({
+      data: {
+        positionId: pos.id,
+        memberId: mem.id,
+        isActive: !ended,
+        endedAt: ended ? new Date() : null,
+      },
+    })
+  }
+
+  // Ketua Umum -> Andi Pratama (ACTIVE)
+  await assign('Ketua Umum', 'Andi Pratama')
+  await assign('Wakil Ketua', 'Rudi Hartono')
+  await assign('Sekretaris', 'Dedi Kurniawan')
+  await assign('Bendahara', 'Siti Rahmawati')
+  await assign('Penasihat', 'Bambang Sutrisno')
+  await assign('Koordinator Operasional', 'Yoga Pratama')
+  await assign('Koordinator Keuangan', 'Maya Sari')
+  await assign('Koordinator Dokumentasi & Humas', 'Nur Hasanah')
+
+  // ============ MISI SAR ===========
   const missions = [
     { name: 'Evakuasi Banjir Bandang Cikampek Selatan', type: 'BENCANA', location: 'Cikampek Selatan, Karawang', status: 'SELESAI', coordinator: 'Andi Pratama', start: -3, end: -2, desc: 'Evakuasi 45 warga terdampak banjir bandang. 3 perahu karet dikerahkan, operasi 6 jam.' },
     { name: 'Pencarian Korban Tenggelam Waduk Bendingan', type: 'PENCARIAN', location: 'Waduk Bendingan', status: 'SELESAI', coordinator: 'Hendra Gunawan', start: -28, end: -28, desc: 'Pencarian korban tenggelam kedalaman 8m. Drone + tim water rescue. Korban ditemukan 4 jam.' },
@@ -475,6 +524,7 @@ async function main() {
   console.log(`   - ${testimonials.length} testimoni`)
   console.log(`   - ${partners.length} mitra`)
   console.log(`   - ${missions.length} misi SAR`)
+
   console.log(`   - ${inventory.length} inventaris`)
   console.log(`   - ${disasters.length} data bencana`)
   console.log(`   - ${donations.length} donasi`)

@@ -83,11 +83,10 @@ export function LaporSection() {
                     key={t.value}
                     type="button"
                     onClick={() => setSelectedType(t.value)}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
-                      selectedType === t.value
-                        ? "border-orange-500 bg-orange-50 dark:bg-orange-950/20"
-                        : "border-slate-200 dark:border-slate-700 hover:border-orange-300"
-                    }`}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${selectedType === t.value
+                      ? "border-orange-500 bg-orange-50 dark:bg-orange-950/20"
+                      : "border-slate-200 dark:border-slate-700 hover:border-orange-300"
+                      }`}
                   >
                     <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${t.color}`}>
                       <t.icon className="h-5 w-5 text-white" />
@@ -104,8 +103,8 @@ export function LaporSection() {
               </div>
               <div>
                 <p className="text-xs text-red-700 dark:text-red-400 font-semibold">DARURAT HUBUNGI</p>
-                <a href="tel:+6281234567890" className="text-xl font-extrabold text-red-600 dark:text-red-400">
-                  +62 812-3456-7890
+                <a href="tel:+6283845408400" className="text-xl font-extrabold text-red-600 dark:text-red-400">
+                  +62 838-4540-8400
                 </a>
                 <p className="text-xs text-slate-500">Siaga 24 Jam</p>
               </div>

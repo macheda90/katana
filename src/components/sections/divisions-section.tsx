@@ -25,7 +25,7 @@ export function DivisionsSection({ divisions }: { divisions: any[] }) {
       <div className="container mx-auto px-4">
         <SectionHeading
           eyebrow="Divisi"
-          title="8 Divisi Spesialisasi Tim SAR"
+          title="Divisi Spesialisasi Tim SAR"
           description="Setiap divisi memiliki kompetensi dan peran khusus dalam operasi pencarian, pertolongan, dan penanggulangan bencana."
         />
 
