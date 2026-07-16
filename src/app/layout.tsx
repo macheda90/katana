@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = "https://katanarescue.cikampek.id";
+const SITE_URL = "https://katanarescue.id";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -78,9 +78,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "KATANA RESCUE - Tim SAR & Relawan Cikampek",
+    title: "KATANA RESCUE - Tim SAR & Relawan Karawang",
     description:
-      "Portal Resmi Tim SAR dan Relawan Penanggulangan Bencana Kecamatan Cikampek.",
+      "Portal Resmi Tim SAR dan Relawan Penanggulangan Bencana Kabupaten Karawang.",
     images: ["/images/hero-rescue.png"],
   },
   manifest: "/manifest.json",
@@ -105,21 +105,21 @@ const jsonLd = {
   description:
     "Tim SAR dan relawan kemanusiaan yang berkomitmen memberikan pelayanan pencarian, pertolongan, evakuasi, serta penanggulangan bencana di wilayah Kecamatan Cikampek dan sekitarnya.",
   slogan: "Siaga. Tanggap. Menyelamatkan.",
-  foundingDate: "2018",
+  foundingDate: "2020",
   areaServed: {
     "@type": "AdministrativeArea",
     name: "Kecamatan Cikampek, Kabupaten Karawang, Jawa Barat",
   },
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Jl. Raya Cikampek No. 1",
+    streetAddress: "Jl. Ahmad Yani No. 105",
     addressLocality: "Cikampek",
     addressRegion: "Jawa Barat",
     postalCode: "41373",
     addressCountry: "ID",
   },
-  telephone: "+62-812-3456-7890",
-  email: "info@katanarescue.cikampek.id",
+  telephone: "+62 838-4540-8400",
+  email: "info@katanarescue.id",
   sameAs: [
     "https://instagram.com/katanarescue",
     "https://facebook.com/katanarescue",

@@ -49,7 +49,7 @@ export const adminSections: Record<string, SectionConfig> = {
     canEdit: R.all,
     canDelete: R.full,
     fields: [
-      { name: 'photo', label: 'Foto Anggota', type: 'image', placeholder: 'URL foto anggota' },
+      { name: 'photo', label: 'Foto Anggota', type: 'file', placeholder: 'Pilih file foto anggota (Upload)' },
       { name: 'fullName', label: 'Nama Lengkap', type: 'text', required: true },
       { name: 'memberNumber', label: 'Nomor Anggota', type: 'text', required: true },
       { name: 'nik', label: 'NIK', type: 'text' },

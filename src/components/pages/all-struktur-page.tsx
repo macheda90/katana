@@ -56,7 +56,7 @@ export function AllStrukturPage({ members, divisions }: { members: any[]; divisi
         </div>
       </section>
 
-      {/* Pengurus Utama */}
+      {/* Pengurus Utama
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
@@ -83,7 +83,7 @@ export function AllStrukturPage({ members, divisions }: { members: any[]; divisi
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Divisi & Anggota */}
       <section className="py-16 bg-slate-50">

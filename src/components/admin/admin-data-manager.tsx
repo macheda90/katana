@@ -159,6 +159,24 @@ export function DataManager({ section, sectionKey, userRole }: { section: Sectio
         delete payload.imagePreviewUrl
       }
 
+      if (sectionKey === 'members' && payload.photo instanceof File) {
+        const fd = new FormData()
+        fd.append('file', payload.photo)
+
+        const prevUrl = payload.photoPreviewUrl
+        if (typeof prevUrl === 'string' && prevUrl) fd.append('prevUrl', prevUrl)
+
+        const upRes = await fetch('/api/admin/upload-member-photo', { method: 'POST', body: fd })
+        const upJson = await upRes.json().catch(() => null)
+        if (!upRes.ok || !upJson?.url) {
+          toast.error(upJson?.error || 'Gagal upload foto anggota')
+          return
+        }
+        payload.photo = upJson.url
+        delete payload.photoPreviewUrl
+      }
+
+
 
 
       const res = await fetch(url, {
