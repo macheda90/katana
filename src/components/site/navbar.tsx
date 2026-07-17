@@ -85,7 +85,7 @@ export function Navbar() {
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5">
               <Phone className="h-3 w-3 text-orange-500" />
-              +62 812-3456-7890
+              +62 838-4540-8400
             </span>
             <span className="flex items-center gap-1.5">
               <Mail className="h-3 w-3 text-orange-500" />
