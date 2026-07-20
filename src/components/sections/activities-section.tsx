@@ -37,7 +37,7 @@ export function ActivitiesSection({ activities }: { activities: any[] }) {
               <span className="text-xs font-semibold text-orange-600 uppercase tracking-wider">Kegiatan Terbaru</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#0F172A] dark:text-white mb-3">
-              Aktivitas & Operasi SAR
+              Kegiatan dan Aktivitas Anggota
             </h2>
             <p className="text-base text-slate-600 dark:text-slate-400">
               Dokumentasi kegiatan rescue, sosial, pelatihan, simulasi, dan penanggulangan bencana tim Katana Rescue.
@@ -54,9 +54,10 @@ export function ActivitiesSection({ activities }: { activities: any[] }) {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {activities.slice(0, 6).map((a) => (
-            <article
+            <Link
               key={a.id}
-              className="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-all duration-300"
+              href={`/activities/${a.slug}`}
+              className="group block bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-all duration-300"
             >
               <div className="relative aspect-[16/10] overflow-hidden">
                 <Image
@@ -90,10 +91,11 @@ export function ActivitiesSection({ activities }: { activities: any[] }) {
                   {a.description}
                 </p>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </div>
+
     </section>
   )
 }

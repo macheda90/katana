@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Calendar, MapPin, Loader2, Filter } from "lucide-react"
 import { useView } from "@/lib/view-store"
@@ -57,7 +58,7 @@ export function AllActivitiesPage() {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/30 mb-4">
             <span className="text-xs font-semibold text-orange-300 uppercase tracking-wider">Semua Kegiatan</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3">Aktivitas & Operasi SAR</h1>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3">Kegiatan dan Aktivitas Anggota</h1>
           <p className="text-base text-slate-300 max-w-2xl">
             Dokumentasi lengkap kegiatan rescue, sosial, pelatihan, simulasi, dan penanggulangan bencana tim Katana Rescue.
           </p>
@@ -102,9 +103,10 @@ export function AllActivitiesPage() {
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {activities.map((a) => (
-                <article
+                <Link
                   key={a.id}
-                  className="group bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300"
+                  href={`/activities/${a.slug}`}
+                  className="group block bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <Image
@@ -144,12 +146,13 @@ export function AllActivitiesPage() {
                       </div>
                     )}
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           )}
         </div>
       </section>
+
     </div>
   )
 }
